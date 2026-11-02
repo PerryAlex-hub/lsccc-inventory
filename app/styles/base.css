@@ -1,0 +1,64 @@
+:root {
+  --ink:#152620;
+  --muted:#708079;
+  --subtle:#9ba8a1;
+  --line:#e4eae5;
+  --canvas:#f5f7f4;
+  --white:#fff;
+  --forest:#193d32;
+  --forest-dark:#112d25;
+  --mint:#e7f3eb;
+  --green:#1e8059;
+  --amber:#ad6c23;
+  --amber-bg:#fcf3e4;
+  --blue:#4565a2;
+  --blue-bg:#edf2fb;
+  --font-body:var(--font-geist),"Segoe UI",sans-serif
+}
+
+* {
+  box-sizing:border-box
+}
+html {
+  scroll-behavior:smooth
+}
+body {
+  margin:0;
+  background:var(--canvas);
+  color:var(--ink);
+  font-family:var(--font-body);
+  font-size:14px;
+  -webkit-font-smoothing:antialiased
+}
+button,input,select {
+  font:inherit
+}
+button {
+  cursor:pointer
+}
+button:disabled {
+  cursor:not-allowed;
+  opacity:.48
+}
+button:focus-visible,input:focus-visible,select:focus-visible {
+  outline:3px solid #82c49e;
+  outline-offset:2px
+}
+button:active:not(:disabled) {
+  transform:translateY(1px)
+}
+a {
+  text-decoration:none
+}
+h1,h2,h3,p {
+  margin:0
+}
+h1,h2,h3 {
+  letter-spacing:-.035em
+}
+svg {
+  flex:none
+}
+.app-shell {
+  min-height:100dvh
+}
