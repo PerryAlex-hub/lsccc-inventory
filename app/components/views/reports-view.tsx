@@ -35,7 +35,7 @@ export function ReportsView({
           "mb-5 flex justify-between gap-5 rounded-[11px] border border-[#dee6eb] bg-[#e5ecf2] px-6.75 py-6",
           "[&_h2]:mt-1.75 [&_h2]:text-[22px]",
           "[&_p]:mt-1.75 [&_p]:text-[11px] [&_p]:text-[#71808a]",
-          "max-[681px]:flex-col",
+          "max-md:flex-col",
         )}
       >
         <div>
@@ -48,7 +48,7 @@ export function ReportsView({
         <div
           className={cn(
             "flex items-center gap-2 self-start text-[10px] whitespace-nowrap text-[#6a7781]",
-            "max-[681px]:self-auto",
+            "max-md:self-auto",
           )}
         >
           <Icon name="clock" size={17} />
@@ -58,7 +58,7 @@ export function ReportsView({
       <div
         className={cn(
           "mx-0 mt-4.5 mb-8.75 grid grid-cols-4 gap-3.5",
-          "max-[681px]:mx-0 max-[681px]:mt-3.25 max-[681px]:mb-7 max-[681px]:grid-cols-2 max-[681px]:gap-2.25",
+          "max-md:mx-0 max-md:mt-3.25 max-md:mb-7 max-md:grid-cols-2 max-md:gap-2.25",
           "max-[391px]:grid-cols-[1fr_1fr]",
         )}
       >
@@ -87,7 +87,7 @@ export function ReportsView({
       <div
         className={cn(
           "grid grid-cols-[minmax(0,1.5fr)_minmax(270px,1fr)] gap-3.75",
-          "max-[681px]:grid-cols-[1fr]",
+          "max-md:grid-cols-[1fr]",
         )}
       >
         <section
@@ -112,10 +112,10 @@ export function ReportsView({
           {state.equipment.map((e) => (
             <div
               className={cn(
-                "grid grid-cols-[minmax(0,1fr)_150px] items-center gap-3.5 border-b border-b-[#e4ebf1] px-0 py-3",
+                "grid min-w-0 grid-cols-[minmax(0,1fr)_150px] items-center gap-3.5 border-b border-b-[#e4ebf1] px-0 py-3",
                 "[&_strong]:text-[10.5px] [&_strong]:font-[670]",
                 "[&_span]:mt-1 [&_span]:block [&_span]:text-[9.5px] [&_span]:text-[#8a9ba8]",
-                "last:border-0",
+                "last:border-0 max-[480px]:grid-cols-1 [&_strong]:block [&_strong]:wrap-anywhere",
               )}
               key={e.id}
             >

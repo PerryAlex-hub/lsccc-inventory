@@ -2,8 +2,10 @@
 
 import { cn } from "@/app/lib/cn";
 import { Button } from "@/app/components/ui/button";
+import { Select } from "../ui/select";
 import { useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { formatDate } from "../../lib/demo-data";
 import { useTeamAccess, type TeamRole } from "../../hooks/use-team-access";
 import { InviteMemberPanel } from "../drawers/invite-member-panel";
@@ -130,32 +132,18 @@ export function TeamSettingsView() {
                 <strong>{invitation.email}</strong>
                 <small>Added {formatDate(invitation.createdAt)}</small>
               </div>
-              <label
-                className={cn(
-                  "[&_select]:h-8.5 [&_select]:w-full [&_select]:text-[11.5px] [&_select]:font-[620] [&_select]:text-[#43525c]",
-                  "[&_select]:rounded-[5px] [&_select]:border [&_select]:border-[#dfe6e9] [&_select]:bg-white [&_select]:px-2",
-                  "[&_select]:py-0",
-                  "max-[801px]:col-start-2",
-                )}
-              >
-                <span
-                  className={cn(
-                    "absolute -mx-0.25 -my-0.25 h-px w-px overflow-hidden border-0 px-0 py-0 whitespace-nowrap [clip:rect(0,0,0,0)]",
-                    "sr-only",
-                  )}
-                >
-                  Role for {invitation.email}
-                </span>
-                <select
+              <div className="min-w-0 max-[801px]:col-start-2">
+                <Select
+                  label={`Role for ${invitation.email}`}
                   value={invitation.role}
-                  onChange={(event) =>
-                    changeRole(invitation.id, event.target.value as TeamRole)
-                  }
-                >
-                  <option value="Inventory officer">Inventory officer</option>
-                  <option value="Administrator">Administrator</option>
-                </select>
-              </label>
+                  onValueChange={(value) => changeRole(invitation.id, value as TeamRole)}
+                  options={["Inventory officer", "Administrator"].map((value) => ({
+                    value,
+                    label: value,
+                  }))}
+                />
+              </div>
+
               <span
                 className={cn(
                   "text-[10.5px] font-[710] text-[#966c3a]",
@@ -245,9 +233,7 @@ export function TeamSettingsView() {
             </span>
             <div>
               <strong>Inventory officer</strong>
-              <p>
-                Record receipts, issues, returns, stock counts and repairs; view reports.
-              </p>
+              <p>Record receipts, equipment issues and repairs; view reports.</p>
             </div>
           </div>
         </section>
@@ -312,6 +298,12 @@ export function TeamSettingsView() {
           </div>
         </section>
       </div>
+      <Link
+        href="/sign-in"
+        className="inline-flex min-h-11 w-fit items-center gap-2 text-sm font-medium text-primary hover:underline"
+      >
+        Account sign-in <Icon name="arrow" size={16} />
+      </Link>
       {inviting && (
         <InviteMemberPanel onClose={() => setInviting(false)} onInvite={addInvitation} />
       )}

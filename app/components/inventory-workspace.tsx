@@ -215,7 +215,7 @@ export default function InventoryWorkspace() {
             "mx-auto my-0 max-w-367.5 px-9.75 pt-9.5 pb-20",
             "max-[1181px]:px-6.5 max-[1181px]:pt-8 max-[1181px]:pb-17.5",
             "max-[921px]:px-6.25 max-[921px]:pt-7.5 max-[921px]:pb-16.25",
-            "max-[681px]:px-4.25 max-[681px]:pt-6.5 max-[681px]:pb-13.75",
+            "max-md:px-4.25 max-md:pt-6.5 max-md:pb-13.75",
           )}
         >
           <PageHeading
@@ -284,7 +284,7 @@ export default function InventoryWorkspace() {
             "[&>span]:place-items-center",
             "[&_button]:ml-1.5 [&_button]:grid [&_button]:border-0 [&_button]:bg-transparent [&_button]:text-[#c7ced3]",
             "[&_button]:place-items-center",
-            "max-[681px]:right-3.75 max-[681px]:bottom-3.5 max-[681px]:left-3.75",
+            "max-md:right-3.75 max-md:bottom-3.5 max-md:left-3.75",
           )}
           role="status"
         >

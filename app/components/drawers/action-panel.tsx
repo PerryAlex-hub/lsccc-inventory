@@ -3,6 +3,7 @@
 import { cn } from "@/app/lib/cn";
 import { Button } from "@/app/components/ui/button";
 import { Field, Input, Select, FormHint } from "@/app/components/ui/form-fields";
+import type { SelectOption } from "../ui/select";
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import type { InventoryState } from "../../lib/demo-data";
 import { formTitles, type FormKind } from "../../lib/workspace-config";
@@ -117,29 +118,19 @@ export function ActionPanel({
       />
     </Field>
   );
-  const select = (
-    name: string,
-    label: string,
-    options: {
-      value: string;
-      label: string;
-    }[],
-  ) => (
+  const select = (name: string, label: string, options: SelectOption[]) => (
     <Field>
       <span>{label}</span>
       <Select
         name={name}
-        aria-label={label}
+        label={label}
         value={fields[name] || ""}
         required
-        onChange={(event) => set(name, event.target.value)}
-      >
-        {options.map((option) => (
-          <option key={option.value} value={option.value}>
-            {option.label}
-          </option>
-        ))}
-      </Select>
+        onValueChange={(value) => set(name, value)}
+        options={options.filter((option) => option.value !== "")}
+        placeholder={options.find((option) => option.value === "")?.label}
+        searchable={name !== "priority"}
+      />
     </Field>
   );
   const equipmentFields = (
@@ -200,7 +191,7 @@ export function ActionPanel({
           "relative z-1 flex h-dvh w-[min(460px,100vw)] flex-col bg-white shadow-[-20px_0_65px_#191f232b]",
           "animate-drawer-enter",
           "[&_form]:flex [&_form]:min-h-0 [&_form]:flex-1 [&_form]:flex-col",
-          "max-[681px]:w-[min(460px,100vw)]",
+          "max-md:w-[min(460px,100vw)]",
           "[&_form>div:first-child]:min-h-0",
         )}
         role="dialog"
@@ -210,14 +201,14 @@ export function ActionPanel({
       >
         <div
           className={cn(
-            "flex h-16 items-center justify-between border-b border-b-line text-[10px] font-[760] tracking-[.12em]",
+            "flex h-16 shrink-0 items-center justify-between border-b border-b-line text-[10px] font-[760] tracking-[.12em]",
             "px-6.25 py-0 text-[#798994]",
           )}
         >
           <span>{kind === "edit" ? "EQUIPMENT RECORD" : "NEW RECORD"}</span>
           <button
             className={cn(
-              "grid h-8.25 w-8.25 place-items-center rounded-[7px] border-0 bg-transparent text-[#697680]",
+              "grid size-11 shrink-0 place-items-center rounded-[7px] border-0 bg-transparent text-[#697680]",
               "hover:bg-[#e8eff5] hover:text-primary",
             )}
             aria-label={`Close ${formTitles[kind]}`}
@@ -227,7 +218,7 @@ export function ActionPanel({
           </button>
         </div>
         <form onSubmit={handleSubmit}>
-          <div className="flex-1 overflow-y-auto px-6.25 py-6.25">
+          <div className="min-h-0 min-w-0 flex-1 overflow-y-auto overscroll-contain p-4 sm:p-6">
             <div
               className={cn(
                 "[&_h2]:mt-2.25 [&_h2]:text-[24px] [&_h2]:tracking-[-.05em]",
@@ -256,10 +247,12 @@ export function ActionPanel({
                   { value: "", label: "Choose equipment" },
                   ...state.equipment.map((item) => ({
                     value: item.id,
-                    label: `${item.name} · ${item.available + item.issued} total · ${item.available} available${kind === "fault" ? ` · ${item.issued - item.faulty} eligible for fault report` : ""}`,
+                    label: item.name,
+                    description: `${item.available + item.issued} total · ${item.available} available${kind === "fault" ? ` · ${item.issued - item.faulty} eligible for fault report` : ""}`,
+                    searchText: `${item.id} ${item.category}`,
                   })),
                   ...(kind === "receive"
-                    ? [{ value: "new", label: "+ Register new equipment" }]
+                    ? [{ value: "new", label: "+ Register new equipment", action: true }]
                     : []),
                 ])}
                 {kind === "receive" && !creating && (
@@ -455,7 +448,7 @@ export function ActionPanel({
           </div>
           <div
             className={cn(
-              "flex justify-end gap-2.25 border-t border-t-line bg-white px-6.25 py-4",
+              "flex shrink-0 justify-end gap-2.25 border-t border-t-line bg-white px-4 pt-4 pb-[max(16px,env(safe-area-inset-bottom))] sm:px-6",
               "[&>button]:flex-1",
             )}
           >

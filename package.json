@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "test": "node tests/inventory-actions.test.cjs",
+    "test": "node tests/run.cjs",
     "format": "prettier --write .",
     "format:check": "prettier --check ."
   },

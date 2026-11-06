@@ -25,6 +25,7 @@ export function Button({
           : "border-[#dae2e7] bg-white text-[#323e46] hover:border-[#9bafbd] hover:bg-[#f8fbf8]",
         size === "compact" ? "h-8.75 px-3" : "h-9.5 px-3.5 max-[391px]:px-2.25",
         "max-[391px]:text-[10.5px]",
+        "max-md:min-h-11 max-md:min-w-0 max-md:py-2 max-md:text-[13px] max-md:whitespace-normal",
         fullWidth && "mt-6.25 w-full",
         className,
       )}

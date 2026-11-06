@@ -3,6 +3,7 @@
 import { cn } from "@/app/lib/cn";
 import { Button } from "@/app/components/ui/button";
 import { Icon } from "../ui/icons";
+import { Select } from "../ui/select";
 import { EquipmentTable } from "../ui/inventory-widgets";
 import type { WorkspaceViewProps } from "./view-props";
 
@@ -52,7 +53,7 @@ export function InventoryView({
         className={cn(
           "mx-0 -mt-1 mb-5.5 flex items-center gap-4.25 text-[11.5px] text-[#768590]",
           "[&_strong]:text-[13px] [&_strong]:text-[#303a42]",
-          "max-[681px]:flex-wrap max-[681px]:gap-[8px_12px]",
+          "max-md:flex-wrap max-md:gap-[8px_12px]",
         )}
       >
         <span>
@@ -67,74 +68,46 @@ export function InventoryView({
           <strong>{lowStock.length}</strong> low on stock
         </span>
       </div>
-      <div
-        className={cn(
-          "mb-3.75 flex flex-wrap items-center gap-2.25",
-          "max-[681px]:[&>label]:flex-1",
-        )}
-      >
-        <div
-          className={cn(
-            "flex h-9.5 min-w-65 flex-1 items-center gap-2.25 rounded-[7px] border border-[#dbe3e8] bg-white text-[#7d8d99]",
-            "px-2.75 py-0",
-            "[&_input]:min-w-0 [&_input]:flex-1 [&_input]:border-0 [&_input]:text-ink [&_input]:outline-none",
-            "[&_input]:text-[11.5px]",
-            "max-[681px]:[flex-basis:100%]",
-            "[&_input::placeholder]:text-[#8b9daa]",
-          )}
-        >
-          <Icon name="search" size={18} />
+      <div className="mb-4 grid min-w-0 grid-cols-2 gap-3 md:flex md:items-center">
+        <label className="col-span-full flex min-h-11 min-w-0 items-center gap-2 rounded-lg border border-line bg-white px-3 md:flex-1">
+          <Icon name="search" size={18} className="text-muted" />
           <input
             aria-label="Search inventory"
-            placeholder="Search the inventory..."
+            placeholder="Search inventory…"
             value={query}
-            onChange={(e) => {
-              setQuery(e.target.value);
+            onChange={(event) => {
+              setQuery(event.target.value);
               setPage(1);
             }}
+            className="w-full min-w-0 bg-transparent py-2 text-base outline-none md:text-[13px]"
+          />
+        </label>
+        <div className="min-w-0 md:w-48">
+          <Select
+            label="Filter by category"
+            value={category}
+            onValueChange={(value) => {
+              setCategory(value);
+              setPage(1);
+            }}
+            options={categories.map((value) => ({ value, label: value }))}
+            searchable
           />
         </div>
-        <label
-          className={cn(
-            "flex h-9.5 items-center gap-1.25 rounded-[7px] border border-[#dbe3e8] bg-white px-2.5 py-0 text-[#74838e]",
-            "[&_select]:border-0 [&_select]:bg-transparent [&_select]:text-[#475662] [&_select]:outline-none",
-            "[&_select]:min-w-25.75 [&_select]:text-[11px]",
-          )}
-        >
-          <Icon name="filter" size={17} />
-          <select
-            aria-label="Filter by category"
-            value={category}
-            onChange={(e) => {
-              setCategory(e.target.value);
-              setPage(1);
-            }}
-          >
-            {categories.map((c) => (
-              <option key={c}>{c}</option>
-            ))}
-          </select>
-        </label>
-        <label
-          className={cn(
-            "flex h-9.5 items-center gap-1.25 rounded-[7px] border border-[#dbe3e8] bg-white px-2.5 py-0 text-[#74838e]",
-            "[&_select]:border-0 [&_select]:bg-transparent [&_select]:text-[#475662] [&_select]:outline-none",
-            "[&_select]:min-w-25.75 [&_select]:text-[11px]",
-          )}
-        >
-          <select
-            aria-label="Filter by stock status"
+        <div className="min-w-0 md:w-40">
+          <Select
+            label="Filter by stock status"
             value={stockFilter}
-            onChange={(e) => {
-              setStockFilter(e.target.value);
+            onValueChange={(value) => {
+              setStockFilter(value);
               setPage(1);
             }}
-          >
-            <option>All stock</option>
-            <option>Low stock</option>
-            <option>Has faults</option>
-          </select>
-        </label>
+            options={["All stock", "Low stock", "Has faults"].map((value) => ({
+              value,
+              label: value,
+            }))}
+          />
+        </div>
       </div>
       {!state.equipment.length && (
         <div
@@ -162,11 +135,11 @@ export function InventoryView({
             className={cn(
               "mt-3 flex items-center justify-between gap-2.5 text-[10.5px] text-[#8394a0]",
               "[&>div]:flex [&>div]:items-center [&>div]:gap-2.25",
-              "max-[681px]:flex-col max-[681px]:items-start",
+              "max-md:flex-col max-md:items-start",
             )}
           >
             <span>
-              Showing {filteredEquipment.length === 0 ? 0 : (page - 1) * 6 + 1}â€“
+              Showing {filteredEquipment.length === 0 ? 0 : (page - 1) * 6 + 1}–
               {Math.min(page * 6, filteredEquipment.length)} of {filteredEquipment.length}{" "}
               equipment types
             </span>

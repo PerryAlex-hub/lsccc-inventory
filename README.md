@@ -34,3 +34,15 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+## Authentication UI
+
+The invite-only account screens are available at `/sign-in`, `/forgot-password`,
+`/reset-password`, and `/accept-invitation`. Reset and invitation links accept a
+`token` query parameter; opening a link without one shows recovery guidance.
+
+These screens do not protect the workspace or create accounts by themselves.
+Connect a server authentication provider to the same-origin POST endpoints under
+`/api/auth/` before enabling account access. The UI expects an explicit
+`{ "ok": true }` response; missing or unavailable endpoints show an error and never
+create a local session. Passwords are not saved in browser storage.

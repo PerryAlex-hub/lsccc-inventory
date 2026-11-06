@@ -17,9 +17,9 @@ export function PageHeading({ view, setForm, exportInventory, exportMovements }:
         "mb-7.5 flex items-end justify-between gap-6",
         "[&_h1]:text-[31px] [&_h1]:leading-[1.1] [&_h1]:font-[760] [&_h1]:tracking-[-.06em] [&_h1]:text-[#21292e]",
         "[&_p]:mt-1.75 [&_p]:text-[12.5px] [&_p]:leading-[1.5] [&_p]:text-[#73818c]",
-        "max-[681px]:mb-5.75 max-[681px]:flex-col max-[681px]:items-start max-[681px]:gap-4.75",
-        "max-[681px]:[&_h1]:text-[27px]",
-        "max-[681px]:[&_p]:text-[11.5px]",
+        "max-md:mb-5.75 max-md:flex-col max-md:items-start max-md:gap-4.75",
+        "max-md:[&_h1]:text-[27px]",
+        "min-w-0 max-md:flex-col max-md:items-stretch max-md:[&_p]:text-sm",
       )}
     >
       <div>
@@ -33,9 +33,10 @@ export function PageHeading({ view, setForm, exportInventory, exportMovements }:
       <div
         className={cn(
           "flex flex-wrap items-center justify-end gap-2.25",
-          "max-[681px]:w-full max-[681px]:justify-start",
-          "max-[681px]:[&>button]:flex-1",
+          "max-md:w-full max-md:justify-start",
+          "max-md:[&>button]:flex-1",
           "max-[391px]:gap-1.5",
+          "min-w-0 max-md:w-full max-md:justify-start max-md:[&>button]:flex-1",
         )}
       >
         {view === "overview" && (

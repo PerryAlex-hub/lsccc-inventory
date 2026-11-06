@@ -1,5 +1,7 @@
 import { cn } from "@/app/lib/cn";
 import Image from "next/image";
+import { useEffect, useRef } from "react";
+import { useMediaQuery } from "../../hooks/use-media-query";
 import type { View } from "../../lib/workspace-config";
 import { Icon, type IconName } from "../ui/icons";
 
@@ -29,7 +31,7 @@ function NavigationItem({ icon, label, active, badge, onClick }: NavigationItemP
   return (
     <button
       className={cn(
-        "group flex h-10.5 w-full items-center gap-3.25 rounded-[8px] border-0 bg-transparent px-3.25 py-0 text-left",
+        "group flex h-11 w-full items-center gap-3.25 rounded-[8px] border-0 bg-transparent px-3.25 py-0 text-left",
         "text-[12.5px] font-[570] text-[#59656d] transition-colors duration-160",
         "hover:bg-[#f4f7f4] hover:text-primary",
         "data-[active=true]:bg-[#edf2f4] data-[active=true]:font-[720] data-[active=true]:text-[#243b48]",
@@ -67,15 +69,48 @@ export function Sidebar({
   navigate,
   openFaultCount,
 }: Props) {
+  const mobile = useMediaQuery("(max-width: 920px)");
+  const navigationRef = useRef<HTMLElement>(null);
+  useEffect(() => {
+    if (!mobile || !mobileNav) return;
+    const previous = document.activeElement as HTMLElement | null;
+    const overflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    const buttons = navigationRef.current?.querySelectorAll<HTMLButtonElement>("button");
+    buttons?.[0]?.focus();
+    const trap = (event: KeyboardEvent) => {
+      if (event.key !== "Tab" || !buttons?.length) return;
+      const first = buttons[0],
+        last = buttons[buttons.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      }
+      if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    };
+    const panel = navigationRef.current;
+    panel?.addEventListener("keydown", trap);
+    return () => {
+      document.body.style.overflow = overflow;
+      panel?.removeEventListener("keydown", trap);
+      previous?.focus();
+    };
+  }, [mobile, mobileNav]);
   return (
     <>
       <aside
+        ref={navigationRef}
+        inert={mobile && !mobileNav}
         className={cn(
           "fixed [inset:0_auto_0_0] z-30 flex w-62.5 flex-col border-r border-r-line bg-white px-3.5 pt-7 pb-4.5",
           "max-[1181px]:w-55",
           "max-[921px]:-translate-x-full max-[921px]:transition-transform max-[921px]:duration-220 max-[921px]:ease-in-out",
           "max-[921px]:shadow-[10px_0_40px_#1f262b21]",
           "max-[921px]:[&[data-open=true]]:translate-x-0",
+          "h-dvh overflow-y-auto overscroll-contain pb-[max(18px,env(safe-area-inset-bottom))]",
         )}
         data-open={mobileNav}
         aria-label="Main navigation"

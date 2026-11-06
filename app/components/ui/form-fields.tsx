@@ -1,5 +1,6 @@
 import type { ComponentPropsWithoutRef } from "react";
 import { cn } from "../../lib/cn";
+export { Select } from "./select";
 
 type FieldVariant = "action" | "repair";
 
@@ -10,7 +11,7 @@ export function Field({ variant = "action", className, ...props }: FieldProps) {
     <label
       {...props}
       className={cn(
-        "mb-4.25 grid gap-1.75 [&>span]:font-bold [&>span]:text-[#475763]",
+        "mb-4.25 grid min-w-0 gap-1.75 [&>span]:font-bold [&>span]:text-[#475763]",
         "[&_small]:text-[11px] [&_small]:text-[#60717c]",
         variant === "action" ? "[&>span]:text-[12px]" : "[&>span]:text-[10.5px]",
         className,
@@ -20,9 +21,9 @@ export function Field({ variant = "action", className, ...props }: FieldProps) {
 }
 
 const controlClassName = cn(
-  "w-full rounded-[7px] border border-[#dbe3e8] bg-white px-2.75 text-[13px] text-[#2f3941] outline-none",
+  "w-full max-w-full min-w-0 rounded-[7px] border border-[#dbe3e8] bg-white px-2.75 text-[13px] text-[#2f3941] outline-none",
   "focus:border-[#8698a4] focus:shadow-[0_0_0_3px_#e4ebf1]",
-  "max-[681px]:text-[16px]",
+  "max-md:text-[16px]",
 );
 
 type InputProps = ComponentPropsWithoutRef<"input"> & { variant?: FieldVariant };
@@ -38,12 +39,6 @@ export function Input({ variant = "action", className, ...props }: InputProps) {
         className,
       )}
     />
-  );
-}
-
-export function Select({ className, ...props }: ComponentPropsWithoutRef<"select">) {
-  return (
-    <select {...props} className={cn(controlClassName, "h-11 min-h-11", className)} />
   );
 }
 

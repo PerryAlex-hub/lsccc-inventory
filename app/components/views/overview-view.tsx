@@ -52,9 +52,9 @@ export function OverviewView({
           "isolate overflow-hidden px-7.75 py-6.25",
           "[&_h2]:mt-3 [&_h2]:text-[23px] [&_h2]:leading-[1.2] [&_h2]:font-[690] [&_h2]:tracking-[-.045em]",
           "[&_p]:mt-2 [&_p]:max-w-120 [&_p]:text-[11.5px] [&_p]:leading-[1.6] [&_p]:text-[#c8cfd4]",
-          "max-[681px]:min-h-55 max-[681px]:flex-col max-[681px]:items-start max-[681px]:gap-5 max-[681px]:px-5.5",
-          "max-[681px]:py-5.5",
-          "max-[681px]:[&_h2]:text-[21px]",
+          "max-md:min-h-55 max-md:flex-col max-md:items-start max-md:gap-5 max-md:px-5.5",
+          "max-md:py-5.5",
+          "max-md:[&_h2]:text-[21px]",
         )}
       >
         <div>
@@ -72,9 +72,9 @@ export function OverviewView({
             "[&_strong]:text-[39px] [&_strong]:leading-[1] [&_strong]:font-[680] [&_strong]:tracking-[-.07em]",
             "[&>span]:ml-3 [&>span]:inline-block [&>span]:text-[10px] [&>span]:leading-[1.45] [&>span]:text-[#ccd3d8]",
             "[&_small]:mt-1.75 [&_small]:block [&_small]:text-[9px] [&_small]:text-[#c6cdd2]",
-            "max-[681px]:grid max-[681px]:w-full max-[681px]:grid-cols-[auto_1fr] max-[681px]:gap-x-2.5",
-            "max-[681px]:[&>span]:ml-0 max-[681px]:[&>span]:self-center",
-            "max-[681px]:[&_small]:col-span-full",
+            "max-md:grid max-md:w-full max-md:grid-cols-[auto_1fr] max-md:gap-x-2.5",
+            "max-md:[&>span]:ml-0 max-md:[&>span]:self-center",
+            "max-md:[&_small]:col-span-full",
           )}
         >
           <strong>{held}</strong>
@@ -87,7 +87,7 @@ export function OverviewView({
             className={cn(
               "mt-3.75 h-1.25 overflow-hidden rounded-[5px] bg-[#58636b]",
               "[&_i]:block [&_i]:h-full [&_i]:rounded-[5px] [&_i]:bg-[#cbd2d7]",
-              "max-[681px]:col-span-full",
+              "max-md:col-span-full",
             )}
           >
             <i
@@ -104,7 +104,7 @@ export function OverviewView({
       <div
         className={cn(
           "mx-0 mt-4.5 mb-8.75 grid grid-cols-4 gap-3.5",
-          "max-[681px]:mx-0 max-[681px]:mt-3.25 max-[681px]:mb-7 max-[681px]:grid-cols-2 max-[681px]:gap-2.25",
+          "max-md:mx-0 max-md:mt-3.25 max-md:mb-7 max-md:grid-cols-2 max-md:gap-2.25",
           "max-[391px]:grid-cols-[1fr_1fr]",
         )}
       >
@@ -139,7 +139,7 @@ export function OverviewView({
         className={cn(
           "mx-0 mt-0 mb-3.75 flex items-end justify-between",
           "[&_h2]:mt-1.5 [&_h2]:text-[17px] [&_h2]:leading-[1.2] [&_h2]:font-[710]",
-          "max-[681px]:[&_h2]:text-[16px]",
+          "max-md:[&_h2]:text-[16px]",
         )}
       >
         <div>
@@ -163,7 +163,7 @@ export function OverviewView({
       <div
         className={cn(
           "mt-5.5 grid grid-cols-[minmax(0,1.45fr)_minmax(280px,1fr)] gap-4.25",
-          "max-[681px]:grid-cols-[1fr]",
+          "max-md:grid-cols-[1fr]",
         )}
       >
         <section className="rounded-[10px] border border-line bg-white px-5.5 pt-5.25 pb-2.5">
@@ -205,7 +205,7 @@ export function OverviewView({
             "[&>strong]:mt-5.75 [&>strong]:text-[23px] [&>strong]:font-bold [&>strong]:tracking-[-.05em]",
             "[&>strong]:leading-[1.15]",
             "[&>p]:mt-2.5 [&>p]:max-w-75 [&>p]:text-[11.5px] [&>p]:leading-[1.6] [&>p]:text-[#6a7781]",
-            "max-[681px]:min-h-58.75",
+            "max-md:min-h-58.75",
           )}
         >
           <div className="flex items-center gap-2.5 text-[9px] font-[780] tracking-[.12em] text-[#6b7882]">

@@ -38,13 +38,13 @@ export function Topbar({
       className={cn(
         "sticky top-0 z-20 flex h-18 items-center gap-7.5 border-b border-b-line bg-white px-8.25 py-0",
         "max-[1181px]:gap-4.5 max-[1181px]:px-6 max-[1181px]:py-0",
-        "max-[681px]:h-15.5 max-[681px]:gap-2.5 max-[681px]:px-4 max-[681px]:py-0",
+        "max-md:h-16 max-md:gap-2 max-md:px-3 max-md:py-0",
       )}
     >
       <button
         className={cn(
           "hidden h-8.25 w-8.25 place-items-center rounded-[7px] border-0 bg-transparent text-[#697680]",
-          "max-[921px]:grid",
+          "max-[921px]:grid max-md:size-11 max-md:shrink-0",
           "hover:bg-[#e8eff5] hover:text-primary",
         )}
         aria-label="Open navigation"
@@ -73,8 +73,8 @@ export function Topbar({
           "[&_kbd]:rounded-[4px] [&_kbd]:border [&_kbd]:border-[#dae2e7] [&_kbd]:font-mono [&_kbd]:text-[9px]",
           "[&_kbd]:px-1.25 [&_kbd]:py-0.75 [&_kbd]:whitespace-nowrap [&_kbd]:text-[#8b9ca9]",
           "max-[921px]:max-w-[none]",
-          "max-[681px]:h-8.75",
-          "max-[681px]:[&_kbd]:hidden",
+          "max-md:h-11 max-md:min-w-0 max-md:[&_input]:text-base",
+          "max-md:[&_kbd]:hidden",
           "focus-within:border-[#95a8b6] focus-within:bg-white",
           "[&_input::placeholder]:text-[#8b9daa]",
         )}
@@ -96,10 +96,10 @@ export function Topbar({
         />
         <kbd>Ctrl K</kbd>
       </div>
-      <div className={cn("flex items-center gap-3.75", "max-[681px]:gap-0.75")}>
+      <div className={cn("flex items-center gap-3.75", "max-md:gap-0.75")}>
         <button
           className={cn(
-            "relative grid h-8.25 w-8.25 place-items-center rounded-[7px] border-0 bg-transparent text-[#697680]",
+            "relative grid h-8.25 w-8.25 place-items-center rounded-[7px] border-0 bg-transparent text-[#697680] max-md:size-11",
             "hover:bg-[#e8eff5] hover:text-primary",
           )}
           aria-label="Notifications"
@@ -111,7 +111,7 @@ export function Topbar({
         <div
           className={cn(
             "grid h-8 w-8 place-items-center rounded-[7px] bg-[#e9edf0] text-[11px] font-[780] text-[#334a58]",
-            "max-[681px]:hidden",
+            "max-md:hidden",
           )}
         >
           AO
@@ -126,7 +126,7 @@ export function Topbar({
             "[&_p]:px-0 [&_p]:py-3 [&_p]:leading-[1.45] [&_p]:text-[#58636b]",
             "[&_p_svg]:text-[#a76c2a]",
             "[&>button]:mt-3",
-            "max-[681px]:top-14 max-[681px]:right-3 max-[681px]:w-[min(320px,calc(100vw_-_24px))]",
+            "max-md:top-14 max-md:right-3 max-md:w-[min(320px,calc(100vw_-_24px))]",
           )}
         >
           <div className="mb-1.5 flex items-center justify-between text-[14px]">

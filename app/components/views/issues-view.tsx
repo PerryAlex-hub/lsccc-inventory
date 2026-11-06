@@ -3,6 +3,7 @@ import { Table } from "@/app/components/ui/table";
 import { equipmentName, formatDate } from "../../lib/demo-data";
 import { sum } from "../../lib/workspace-utils";
 import { EmptyState, Metric } from "../ui/inventory-widgets";
+import { MobileRecord } from "../ui/mobile-record";
 import type { WorkspaceViewProps } from "./view-props";
 
 type Props = Pick<WorkspaceViewProps, "state" | "issued">;
@@ -13,7 +14,7 @@ export function IssuesView({ state, issued }: Props) {
       <div
         className={cn(
           "mx-0 mt-0 mb-8.75 grid grid-cols-3 gap-3.5",
-          "max-[681px]:mx-0 max-[681px]:mt-3.25 max-[681px]:mb-7 max-[681px]:grid-cols-2 max-[681px]:gap-2.25",
+          "max-md:mx-0 max-md:mt-3.25 max-md:mb-7 max-md:grid-cols-2 max-md:gap-2.25",
           "max-[391px]:grid-cols-[1fr_1fr]",
         )}
       >
@@ -48,7 +49,36 @@ export function IssuesView({ state, issued }: Props) {
           <h2>Custody register</h2>
           <span>Who currently holds equipment</span>
         </div>
-        <div className="overflow-x-auto">
+        <div className="md:hidden">
+          {state.issues.map((issue) => (
+            <MobileRecord
+              key={issue.id}
+              reference={issue.id}
+              title={equipmentName(state.equipment, issue.equipmentId)}
+              date={formatDate(issue.date)}
+              status={
+                <span className="rounded bg-[#edf2fb] px-2 py-1 text-xs text-[#5575a8]">
+                  {issue.returned === issue.quantity ? "Returned" : "Assigned"}
+                </span>
+              }
+              details={[
+                { label: "Custodian", value: issue.assignee },
+                { label: "Department / location", value: issue.department },
+                {
+                  label: "Units held",
+                  value: `${issue.quantity - issue.returned} of ${issue.quantity}`,
+                },
+              ]}
+            />
+          ))}
+          {!state.issues.length && (
+            <EmptyState
+              title="No equipment assigned yet"
+              message="Receive stock, then choose Issue equipment to record its custodian."
+            />
+          )}
+        </div>
+        <div className="hidden overflow-x-auto md:block">
           <Table>
             <thead>
               <tr>

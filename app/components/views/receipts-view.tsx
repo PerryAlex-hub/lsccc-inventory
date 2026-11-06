@@ -3,6 +3,7 @@ import { Table } from "@/app/components/ui/table";
 import { equipmentName } from "../../lib/demo-data";
 import { formatDateTime, sum } from "../../lib/workspace-utils";
 import { EmptyState } from "../ui/inventory-widgets";
+import { MobileRecord } from "../ui/mobile-record";
 import type { WorkspaceViewProps } from "./view-props";
 
 type Props = Pick<WorkspaceViewProps, "state">;
@@ -14,7 +15,7 @@ export function ReceiptsView({ state }: Props) {
         className={cn(
           "mx-0 -mt-1 mb-5.5 flex items-center gap-4.25 text-[11.5px] text-[#768590]",
           "[&_strong]:text-[13px] [&_strong]:text-[#303a42]",
-          "max-[681px]:flex-wrap max-[681px]:gap-[8px_12px]",
+          "max-md:flex-wrap max-md:gap-[8px_12px]",
         )}
       >
         <span>
@@ -36,7 +37,33 @@ export function ReceiptsView({ state }: Props) {
           <h2>Delivery register</h2>
           <span>Latest first</span>
         </div>
-        <div className="overflow-x-auto">
+        <div className="md:hidden">
+          {[...state.receipts]
+            .sort((a, b) => b.date.localeCompare(a.date))
+            .map((receipt) => (
+              <MobileRecord
+                key={receipt.id}
+                reference={receipt.id}
+                title={equipmentName(state.equipment, receipt.equipmentId)}
+                date={
+                  <time dateTime={receipt.date}>
+                    {formatDateTime(receipt.date)} · Lagos time
+                  </time>
+                }
+                details={[
+                  { label: "Supplier / source", value: receipt.supplier },
+                  { label: "Quantity received", value: `${receipt.quantity} units` },
+                ]}
+              />
+            ))}
+          {!state.receipts.length && (
+            <EmptyState
+              title="No deliveries received yet"
+              message="Choose Receive stock to record your first delivery."
+            />
+          )}
+        </div>
+        <div className="hidden overflow-x-auto md:block">
           <Table>
             <thead>
               <tr>

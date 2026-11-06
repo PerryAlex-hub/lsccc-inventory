@@ -75,6 +75,12 @@
     @apply flex-none;
   }
 
+  @media (pointer: coarse), (width < 768px) {
+    button {
+      @apply min-h-11 min-w-11;
+    }
+  }
+
   @media (prefers-reduced-motion: reduce) {
     *,
     *::before,

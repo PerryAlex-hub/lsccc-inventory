@@ -30,20 +30,20 @@ export function DetailPanel({
         className={cn(
           "relative z-1 flex h-dvh w-[min(460px,100vw)] flex-col bg-white shadow-[-20px_0_65px_#191f232b]",
           "animate-drawer-enter",
-          "max-[681px]:w-[min(460px,100vw)]",
+          "max-md:w-[min(460px,100vw)]",
         )}
         aria-label={`${item.name} details`}
       >
         <div
           className={cn(
-            "flex h-16 items-center justify-between border-b border-b-line text-[10px] font-[760] tracking-[.12em]",
+            "flex h-16 shrink-0 items-center justify-between border-b border-b-line text-[10px] font-[760] tracking-[.12em]",
             "px-6.25 py-0 text-[#798994]",
           )}
         >
           <span>Equipment details</span>
           <button
             className={cn(
-              "grid h-8.25 w-8.25 place-items-center rounded-[7px] border-0 bg-transparent text-[#697680]",
+              "grid size-11 shrink-0 place-items-center rounded-[7px] border-0 bg-transparent text-[#697680]",
               "hover:bg-[#e8eff5] hover:text-primary",
             )}
             aria-label="Close equipment details"
@@ -52,7 +52,7 @@ export function DetailPanel({
             <Icon name="close" size={19} />
           </button>
         </div>
-        <div className="flex-1 overflow-y-auto px-6.25 py-6.25">
+        <div className="min-h-0 min-w-0 flex-1 overflow-y-auto overscroll-contain p-4 sm:p-6">
           <div
             className={cn(
               "border-b border-b-line pb-6.75",
@@ -64,7 +64,7 @@ export function DetailPanel({
               <Icon name={categoryIcon(item.category)} size={32} />
             </span>
             <span className="text-[9px] font-[780] tracking-[.16em] text-[#798994]">
-              {item.id} Â· {item.category}
+              {item.id} · {item.category}
             </span>
             <h2>{item.name}</h2>
             <p>Tracked across store and staff custody.</p>
@@ -206,7 +206,7 @@ export function DetailPanel({
         </div>
         <div
           className={cn(
-            "flex justify-end gap-2.25 border-t border-t-line bg-white px-6.25 py-4",
+            "flex shrink-0 justify-end gap-2.25 border-t border-t-line bg-white px-4 pt-4 pb-[max(16px,env(safe-area-inset-bottom))] sm:px-6",
             "[&>button]:flex-1",
           )}
         >

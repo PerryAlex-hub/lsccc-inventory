@@ -1,16 +1,7 @@
 /* eslint-disable @typescript-eslint/no-require-imports -- CommonJS harness registers the TypeScript loader before loading the app modules. */
 const assert = require("node:assert/strict");
-const fs = require("node:fs");
 const test = require("node:test");
-const ts = require("typescript");
-
-// Run the app's pure TypeScript operations with the project's existing compiler.
-require.extensions[".ts"] = (module, filename) => {
-  const output = ts.transpileModule(fs.readFileSync(filename, "utf8"), {
-    compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 },
-  });
-  module._compile(output.outputText, filename);
-};
+require("./register-typescript.cjs");
 const {
   applyInventoryForm,
   transitionFault,

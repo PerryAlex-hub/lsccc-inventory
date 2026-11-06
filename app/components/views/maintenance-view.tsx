@@ -40,7 +40,7 @@ function MaintenanceCase({
     <article
       className={cn(
         "min-w-0 rounded-[10px] border border-line bg-white px-6 py-6",
-        "max-[681px]:px-4.5 max-[681px]:py-4.5",
+        "max-md:px-4.5 max-md:py-4.5",
       )}
     >
       <div
@@ -49,7 +49,7 @@ function MaintenanceCase({
           "[&_h3]:mt-1.5 [&_h3]:text-[17px] [&_h3]:wrap-anywhere",
           "[&_p]:mt-1.5 [&_p]:text-[12px] [&_p]:text-[#60717c]",
           "[&>span]:whitespace-nowrap",
-          "max-[681px]:flex-wrap",
+          "max-md:flex-wrap",
         )}
       >
         <div>
@@ -81,8 +81,8 @@ function MaintenanceCase({
           "[&_li]:px-0 [&_li]:py-2.5 [&_li]:text-[12px] [&_li]:text-[#687985]",
           "[&_li>span]:grid [&_li>span]:h-5.75 [&_li>span]:w-5.75 [&_li>span]:place-items-center [&_li>span]:rounded-full",
           "[&_li>span]:shrink-0 [&_li>span]:bg-[#eff3f5] [&_li>span]:text-[11px]",
-          "max-[681px]:gap-1.5",
-          "max-[681px]:[&_li]:gap-1.25 max-[681px]:[&_li]:text-[11px]",
+          "max-md:gap-1.5",
+          "max-md:[&_li]:gap-1.25 max-md:[&_li]:text-[11px]",
           "[&_li[data-reached=true]]:border-b-[#6a8c78] [&_li[data-reached=true]]:text-[#315a43]",
           "[&_li[aria-current=step]]:font-[750]",
           "[&_li[data-reached=true]>span]:bg-[#e6f0e9]",
@@ -199,9 +199,9 @@ function MaintenanceCase({
             "[&>p]:mx-0 [&>p]:mt-2 [&>p]:mb-4.5 [&>p]:text-[12px] [&>p]:leading-[1.6] [&>p]:text-[#526573]",
             "[&_label_input]:max-w-85 [&_label_input]:text-[13px]",
             "[&_label_textarea]:text-[13px]",
-            "max-[681px]:px-4 max-[681px]:py-4",
-            "max-[681px]:[&_label_input]:text-[16px]",
-            "max-[681px]:[&_label_textarea]:text-[16px]",
+            "max-md:px-4 max-md:py-4",
+            "max-md:[&_label_input]:text-[16px]",
+            "max-md:[&_label_textarea]:text-[16px]",
           )}
           onSubmit={complete}
         >
@@ -339,7 +339,7 @@ export function MaintenanceView({ state, updateFault, setForm }: Props) {
       <div
         className={cn(
           "mx-0 mt-5 mb-6 flex flex-wrap gap-2.5",
-          "max-[681px]:[&>button]:min-h-11 max-[681px]:[&>button]:flex-1",
+          "max-md:[&>button]:min-h-11 max-md:[&>button]:flex-1",
         )}
       >
         <Button
@@ -366,7 +366,7 @@ export function MaintenanceView({ state, updateFault, setForm }: Props) {
       <div
         className={cn(
           "mb-5 flex flex-wrap gap-2",
-          "[&_button]:flex [&_button]:min-h-10.5 [&_button]:items-center [&_button]:gap-2.25 [&_button]:border",
+          "[&_button]:flex [&_button]:min-h-11 [&_button]:items-center [&_button]:gap-2.25 [&_button]:border",
           "[&_button]:rounded-[6px] [&_button]:border-line [&_button]:bg-white [&_button]:text-[#526573]",
           "[&_button]:cursor-pointer [&_button]:px-3.5 [&_button]:py-2 [&_button]:text-[12px]",
           "[&_span]:tabular-nums [&_span]:opacity-[.8]",
