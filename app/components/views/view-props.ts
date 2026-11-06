@@ -25,5 +25,9 @@ export type WorkspaceViewProps = {
   navigate: (view: View) => void;
   setForm: (kind: FormKind) => void;
   setDetail: (id: string) => void;
-  updateFault: (fault: Fault, status: Fault["status"], details?: RepairDetails) => string | null;
+  updateFault: (
+    fault: Fault,
+    status: Fault["status"],
+    details?: RepairDetails,
+  ) => string | null;
 };

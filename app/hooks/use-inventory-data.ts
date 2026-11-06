@@ -1,8 +1,17 @@
 ﻿"use client";
 
 import { useEffect, useRef, useState } from "react";
-import { equipmentName, initialState, type Fault, type InventoryState } from "../lib/demo-data";
-import { applyInventoryForm, transitionFault, type RepairDetails } from "../lib/inventory-actions";
+import {
+  equipmentName,
+  initialState,
+  type Fault,
+  type InventoryState,
+} from "../lib/demo-data";
+import {
+  applyInventoryForm,
+  transitionFault,
+  type RepairDetails,
+} from "../lib/inventory-actions";
 import type { FormKind } from "../lib/workspace-config";
 import { downloadCsv, formatDateTime } from "../lib/workspace-utils";
 
@@ -57,14 +66,48 @@ export function useInventoryData() {
 
   const exportInventory = () => {
     downloadCsv("lsccc-inventory.csv", [
-      ["ID", "Equipment", "Category", "Primary store", "Total held", "Available", "Issued", "Faulty"],
-      ...state.equipment.map((e) => [e.id, e.name, e.category, e.location, e.available + e.issued, e.available, e.issued, e.faulty]),
+      [
+        "ID",
+        "Equipment",
+        "Category",
+        "Primary store",
+        "Total held",
+        "Available",
+        "Issued",
+        "Faulty",
+      ],
+      ...state.equipment.map((e) => [
+        e.id,
+        e.name,
+        e.category,
+        e.location,
+        e.available + e.issued,
+        e.available,
+        e.issued,
+        e.faulty,
+      ]),
     ]);
   };
   const exportMovements = () => {
     downloadCsv("lsccc-movements.csv", [
-      ["Reference", "Date and time (Lagos)", "Type", "Equipment", "Quantity", "Description", "Recorded by"],
-      ...state.movements.map((m) => [m.id, formatDateTime(m.date), m.type, equipmentName(state.equipment, m.equipmentId), m.quantity, m.description, m.actor]),
+      [
+        "Reference",
+        "Date and time (Lagos)",
+        "Type",
+        "Equipment",
+        "Quantity",
+        "Description",
+        "Recorded by",
+      ],
+      ...state.movements.map((m) => [
+        m.id,
+        formatDateTime(m.date),
+        m.type,
+        equipmentName(state.equipment, m.equipmentId),
+        m.quantity,
+        m.description,
+        m.actor,
+      ]),
     ]);
   };
 

@@ -7,17 +7,11 @@ export type View =
   | "movements"
   | "reports"
   | "settings";
-export type FormKind =
-  | "receive"
-  | "issue"
-  | "fault"
-  | "equipment"
-  | "edit";
+export type FormKind = "receive" | "issue" | "fault" | "equipment" | "edit";
 export const headings: Record<View, { title: string; description: string }> = {
   overview: {
     title: "Overview",
-    description:
-      "A clear picture of stock, custody and maintenance across the centre.",
+    description: "A clear picture of stock, custody and maintenance across the centre.",
   },
   inventory: {
     title: "Inventory",
@@ -56,4 +50,3 @@ export const formTitles: Record<FormKind, string> = {
   equipment: "Add equipment",
   edit: "Edit equipment",
 };
-

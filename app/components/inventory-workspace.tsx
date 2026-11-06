@@ -1,14 +1,10 @@
 "use client";
 
+import { cn } from "@/app/lib/cn";
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { Fault } from "../lib/demo-data";
 import type { RepairDetails } from "../lib/inventory-actions";
-import {
-  formTitles,
-  headings,
-  type FormKind,
-  type View,
-} from "../lib/workspace-config";
+import { formTitles, headings, type FormKind, type View } from "../lib/workspace-config";
 import { sum } from "../lib/workspace-utils";
 import { useInventoryData } from "../hooks/use-inventory-data";
 import { ActionPanel } from "./drawers/action-panel";
@@ -42,7 +38,6 @@ export default function InventoryWorkspace() {
   const [toast, setToast] = useState("");
   const [notifications, setNotifications] = useState(false);
   const searchRef = useRef<HTMLInputElement>(null);
-
   useEffect(() => {
     const syncView = () => {
       const next = location.hash.slice(1) as View;
@@ -56,13 +51,11 @@ export default function InventoryWorkspace() {
       window.removeEventListener("hashchange", syncView);
     };
   }, []);
-
   useEffect(() => {
     if (!toast) return;
     const timer = window.setTimeout(() => setToast(""), 4200);
     return () => window.clearTimeout(timer);
   }, [toast]);
-
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
       if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "k") {
@@ -80,7 +73,6 @@ export default function InventoryWorkspace() {
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
   }, []);
-
   const navigate = (target: View) => {
     setView(target);
     setMobileNav(false);
@@ -89,17 +81,12 @@ export default function InventoryWorkspace() {
     window.history.pushState(null, "", `#${target}`);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
-
   const held = sum(state.equipment.map((item) => item.available + item.issued));
   const available = sum(state.equipment.map((item) => item.available));
   const issued = sum(state.equipment.map((item) => item.issued));
   const faulty = sum(state.equipment.map((item) => item.faulty));
-  const lowStock = state.equipment.filter(
-    (item) => item.available <= item.reorder,
-  );
-  const openFaults = state.faults.filter(
-    (fault) => fault.status !== "Resolved",
-  );
+  const lowStock = state.equipment.filter((item) => item.available <= item.reorder);
+  const openFaults = state.faults.filter((fault) => fault.status !== "Resolved");
   const categories = [
     "All categories",
     ...new Set(state.equipment.map((item) => item.category)),
@@ -107,10 +94,9 @@ export default function InventoryWorkspace() {
   const filteredEquipment = useMemo(
     () =>
       state.equipment.filter((item) => {
-        const matchesQuery =
-          `${item.name} ${item.id} ${item.category} ${item.location}`
-            .toLowerCase()
-            .includes(query.toLowerCase());
+        const matchesQuery = `${item.name} ${item.id} ${item.category} ${item.location}`
+          .toLowerCase()
+          .includes(query.toLowerCase());
         const matchesCategory =
           category === "All categories" || item.category === category;
         const matchesStock =
@@ -125,7 +111,6 @@ export default function InventoryWorkspace() {
   const pageCount = Math.max(1, Math.ceil(filteredEquipment.length / 6));
   const visibleEquipment = filteredEquipment.slice((page - 1) * 6, page * 6);
   const selected = state.equipment.find((item) => item.id === detail);
-
   const handleSubmit = (kind: FormKind, fields: Record<string, string>) => {
     const error = submitForm(kind, fields);
     if (!error) {
@@ -141,13 +126,15 @@ export default function InventoryWorkspace() {
     }
     return error;
   };
-  const handleUpdateFault = (fault: Fault, status: Fault["status"], details?: RepairDetails) => {
+  const handleUpdateFault = (
+    fault: Fault,
+    status: Fault["status"],
+    details?: RepairDetails,
+  ) => {
     const error = updateFault(fault, status, details);
     if (error) return error;
     setToast(
-      status === "Resolved"
-        ? "Repair marked complete"
-        : "Maintenance progress updated",
+      status === "Resolved" ? "Repair marked complete" : "Maintenance progress updated",
     );
     return null;
   };
@@ -159,7 +146,6 @@ export default function InventoryWorkspace() {
     exportMovements();
     setToast("Movement CSV downloaded");
   };
-
   const viewProps: WorkspaceViewProps = {
     state,
     held,
@@ -185,11 +171,17 @@ export default function InventoryWorkspace() {
     setDetail,
     updateFault: handleUpdateFault,
   };
-
-  if (!ready) return <main className="workspace-loading" role="status">Loading your inventory…</main>;
-
+  if (!ready)
+    return (
+      <main
+        className="grid min-h-dvh place-items-center text-[14px] text-[#526573]"
+        role="status"
+      >
+        Loading your inventory…
+      </main>
+    );
   return (
-    <div className="app-shell">
+    <div className="min-h-dvh">
       <Sidebar
         view={view}
         mobileNav={mobileNav}
@@ -197,7 +189,13 @@ export default function InventoryWorkspace() {
         navigate={navigate}
         openFaultCount={openFaults.length}
       />
-      <div className="workspace">
+      <div
+        className={cn(
+          "ml-62.5 min-h-dvh min-w-0",
+          "max-[1181px]:ml-55",
+          "max-[921px]:ml-0",
+        )}
+      >
         <Topbar
           view={view}
           setView={setView}
@@ -212,7 +210,14 @@ export default function InventoryWorkspace() {
           faulty={faulty}
           lowStockCount={lowStock.length}
         />
-        <main className="main-content">
+        <main
+          className={cn(
+            "mx-auto my-0 max-w-367.5 px-9.75 pt-9.5 pb-20",
+            "max-[1181px]:px-6.5 max-[1181px]:pt-8 max-[1181px]:pb-17.5",
+            "max-[921px]:px-6.25 max-[921px]:pt-7.5 max-[921px]:pb-16.25",
+            "max-[681px]:px-4.25 max-[681px]:pt-6.5 max-[681px]:pb-13.75",
+          )}
+        >
           <PageHeading
             view={view}
             setForm={setForm}
@@ -271,7 +276,18 @@ export default function InventoryWorkspace() {
         />
       )}
       {toast && (
-        <div className="toast" role="status">
+        <div
+          className={cn(
+            "fixed right-6.5 bottom-6.25 z-80 flex items-center gap-2.75 rounded-[9px] bg-[#2a343b] text-white",
+            "animate-toast-enter py-2.5 pr-2.75 pl-2.5 text-[11.5px] font-[650] shadow-[0_12px_35px_#1f262b36]",
+            "[&>span]:grid [&>span]:h-6.25 [&>span]:w-6.25 [&>span]:rounded-[6px] [&>span]:bg-[#58636b]",
+            "[&>span]:place-items-center",
+            "[&_button]:ml-1.5 [&_button]:grid [&_button]:border-0 [&_button]:bg-transparent [&_button]:text-[#c7ced3]",
+            "[&_button]:place-items-center",
+            "max-[681px]:right-3.75 max-[681px]:bottom-3.5 max-[681px]:left-3.75",
+          )}
+          role="status"
+        >
           <span>
             <Icon name="check" size={17} />
           </span>

@@ -15,18 +15,22 @@ export function parseLocalDateTime(value: string) {
 
 export function formatDateTime(value: string) {
   return new Intl.DateTimeFormat("en-NG", {
-    timeZone: "Africa/Lagos", dateStyle: "medium", timeStyle: "short",
+    timeZone: "Africa/Lagos",
+    dateStyle: "medium",
+    timeStyle: "short",
   }).format(new Date(value));
 }
 
 export function downloadCsv(filename: string, rows: (string | number)[][]) {
   const csv = rows
     .map((row) =>
-      row.map((value) => {
-        const text = String(value);
-        const safe = /^[=+@\-\t\r]/.test(text) ? `'${text}` : text;
-        return `"${safe.replaceAll('"', '""')}"`;
-      }).join(","),
+      row
+        .map((value) => {
+          const text = String(value);
+          const safe = /^[=+@\-\t\r]/.test(text) ? `'${text}` : text;
+          return `"${safe.replaceAll('"', '""')}"`;
+        })
+        .join(","),
     )
     .join("\r\n");
   const url = URL.createObjectURL(

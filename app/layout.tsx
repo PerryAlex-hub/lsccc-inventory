@@ -2,8 +2,19 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 
-const geist = localFont({ src: "./fonts/geist-latin.woff2", variable: "--font-geist", weight: "100 900", display: "swap" });
-const geistMono = localFont({ src: "./fonts/geist-mono-latin.woff2", variable: "--font-geist-mono", weight: "100 900", display: "swap" });
+const geist = localFont({
+  src: "./fonts/geist-latin.woff2",
+  variable: "--font-geist",
+  weight: "100 900",
+  display: "swap",
+});
+
+const geistMono = localFont({
+  src: "./fonts/geist-mono-latin.woff2",
+  variable: "--font-geist-mono",
+  weight: "100 900",
+  display: "swap",
+});
 
 export const metadata: Metadata = {
   title: "LSCCC Inventory | Stock & Maintenance",
@@ -11,5 +22,9 @@ export const metadata: Metadata = {
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
-  return <html lang="en" className={`${geist.variable} ${geistMono.variable}`}><body>{children}</body></html>;
+  return (
+    <html lang="en" className={`${geist.variable} ${geistMono.variable}`}>
+      <body>{children}</body>
+    </html>
+  );
 }

@@ -40,19 +40,29 @@ export function useTeamAccess() {
 
   const addInvitation = (rawEmail: string, role: TeamRole) => {
     const email = rawEmail.trim().toLowerCase();
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return "Enter a valid work email address.";
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
+      return "Enter a valid work email address.";
     if (invitations.some((invitation) => invitation.email === email)) {
       return "An invitation for this address already exists.";
     }
-    setInvitations((current) => [{
-      id: crypto.randomUUID(), email, role, createdAt: new Date().toISOString(),
-    }, ...current]);
+    setInvitations((current) => [
+      {
+        id: crypto.randomUUID(),
+        email,
+        role,
+        createdAt: new Date().toISOString(),
+      },
+      ...current,
+    ]);
     return null;
   };
 
   const changeRole = (id: string, role: TeamRole) => {
-    setInvitations((current) => current.map((invitation) =>
-      invitation.id === id ? { ...invitation, role } : invitation));
+    setInvitations((current) =>
+      current.map((invitation) =>
+        invitation.id === id ? { ...invitation, role } : invitation,
+      ),
+    );
   };
 
   const cancelInvitation = (id: string) => {
