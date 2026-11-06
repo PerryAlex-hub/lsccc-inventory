@@ -113,7 +113,7 @@ export function useInventoryData() {
       (!Number.isInteger(Number(fields.reorder || 0)) ||
         Number(fields.reorder || 0) < 0)
     )
-      return "Reorder level must be a non-negative whole number.";
+      return "Low-stock alert level must be a non-negative whole number.";
     if (
       kind === "location" &&
       state.locations.some(

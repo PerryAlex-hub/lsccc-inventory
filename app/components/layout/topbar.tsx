@@ -14,12 +14,11 @@ type Props = {
   searchRef: RefObject<HTMLInputElement | null>;
   notifications: boolean;
   setNotifications: (open: boolean) => void;
-  openFaultCount: number;
   faulty: number;
   lowStockCount: number;
 };
 
-export function Topbar({ view, setView, navigate, query, setQuery, setPage, setMobileNav, searchRef, notifications, setNotifications, openFaultCount, faulty, lowStockCount }: Props) {
+export function Topbar({ view, setView, navigate, query, setQuery, setPage, setMobileNav, searchRef, notifications, setNotifications, faulty, lowStockCount }: Props) {
   return (
         <header className="topbar">
           <button
@@ -53,10 +52,6 @@ export function Topbar({ view, setView, navigate, query, setQuery, setPage, setM
             <kbd>Ctrl K</kbd>
           </div>
           <div className="top-actions">
-            <span className="workspace-chip">
-              <span />
-              Internal workspace
-            </span>
             <button
               className="icon-button notification-button"
               aria-label="Notifications"
@@ -64,7 +59,6 @@ export function Topbar({ view, setView, navigate, query, setQuery, setPage, setM
               onClick={() => setNotifications(!notifications)}
             >
               <Icon name="bell" size={19} />
-              {openFaultCount > 0 && <i />}
             </button>
             <div className="top-avatar">AO</div>
           </div>
@@ -86,7 +80,7 @@ export function Topbar({ view, setView, navigate, query, setQuery, setPage, setM
               </p>
               <p>
                 <Icon name="box" size={17} />
-                {lowStockCount} equipment types are at or below reorder level.
+                {lowStockCount} equipment types are low on stock.
               </p>
               <button
                 className="text-link"

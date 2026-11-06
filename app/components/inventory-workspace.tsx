@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { initialState, type Fault } from "../lib/demo-data";
+import type { Fault } from "../lib/demo-data";
 import { formTitles, headings, type FormKind, type View } from "../lib/workspace-config";
 import { sum } from "../lib/workspace-utils";
 import { useInventoryData } from "../hooks/use-inventory-data";
@@ -19,11 +19,11 @@ import { MovementsView } from "./views/movements-view";
 import { OverviewView } from "./views/overview-view";
 import { ReceiptsView } from "./views/receipts-view";
 import { ReportsView } from "./views/reports-view";
-import { SettingsView } from "./views/settings-view";
+import { TeamSettingsView } from "./views/team-settings-view";
 import type { WorkspaceViewProps } from "./views/view-props";
 
 export default function InventoryWorkspace() {
-  const { state, setState, submitForm, updateFault, exportInventory, exportMovements } = useInventoryData();
+  const { state, submitForm, updateFault, exportInventory, exportMovements } = useInventoryData();
   const [view, setView] = useState<View>("overview");
   const [form, setForm] = useState<FormKind | null>(null);
   const [formEquipmentId, setFormEquipmentId] = useState<string | null>(null);
@@ -122,14 +122,13 @@ export default function InventoryWorkspace() {
     filteredEquipment, visibleEquipment, page, pageCount, query, category,
     stockFilter, setQuery, setCategory, setStockFilter, setPage, navigate,
     setForm, setDetail, updateFault: handleUpdateFault,
-    resetData: () => { setState(initialState); setToast("Demo data restored"); },
   };
 
   return (
     <div className="app-shell">
       <Sidebar view={view} mobileNav={mobileNav} setMobileNav={setMobileNav} navigate={navigate} openFaultCount={openFaults.length} />
       <div className="workspace">
-        <Topbar view={view} setView={setView} navigate={navigate} query={query} setQuery={setQuery} setPage={setPage} setMobileNav={setMobileNav} searchRef={searchRef} notifications={notifications} setNotifications={setNotifications} openFaultCount={openFaults.length} faulty={faulty} lowStockCount={lowStock.length} />
+        <Topbar view={view} setView={setView} navigate={navigate} query={query} setQuery={setQuery} setPage={setPage} setMobileNav={setMobileNav} searchRef={searchRef} notifications={notifications} setNotifications={setNotifications} faulty={faulty} lowStockCount={lowStock.length} />
         <main className="main-content">
           <PageHeading view={view} setForm={setForm} exportInventory={handleExportInventory} exportMovements={handleExportMovements} />
           {view === "overview" && <OverviewView {...viewProps} />}
@@ -140,7 +139,7 @@ export default function InventoryWorkspace() {
           {view === "locations" && <LocationsView {...viewProps} />}
           {view === "movements" && <MovementsView {...viewProps} />}
           {view === "reports" && <ReportsView {...viewProps} />}
-          {view === "settings" && <SettingsView {...viewProps} />}
+          {view === "settings" && <TeamSettingsView />}
         </main>
       </div>
       {selected && (

@@ -1,3 +1,4 @@
+import Image from "next/image";
 import type { View } from "../../lib/workspace-config";
 import { Icon, type IconName } from "../ui/icons";
 
@@ -28,15 +29,10 @@ export function Sidebar({ view, mobileNav, setMobileNav, navigate, openFaultCoun
         aria-label="Main navigation"
       >
         <div className="brand">
-          <div className="brand-mark">
-            <span />
-            <span />
-            <span />
-            <span />
-          </div>
+          <Image className="brand-logo" src="/lsccc-logo.jpg" alt="Lagos State Command and Control Centre crest" width={42} height={42} priority />
           <div>
             <strong>LSCCC</strong>
-            <small>INVENTORY WORKSPACE</small>
+            <small>Inventory workspace</small>
           </div>
         </div>
         <div className="side-section-label">WORKSPACE</div>

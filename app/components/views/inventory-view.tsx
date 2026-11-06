@@ -19,7 +19,7 @@ export function InventoryView({ state, available, lowStock, query, setQuery, pag
                 </span>
                 <span className="separator" />
                 <span>
-                  <strong>{lowStock.length}</strong> at reorder level
+                  <strong>{lowStock.length}</strong> low on stock
                 </span>
               </div>
               <div className="toolbar">

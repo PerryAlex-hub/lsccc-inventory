@@ -15,28 +15,11 @@
   gap:11px;
   padding:0 13px 38px
 }
-.brand-mark {
-  width:35px;
-  height:35px;
-  border-radius:10px;
-  background:var(--forest);
-  display:grid;
-  grid-template-columns:repeat(2,7px);
-  grid-template-rows:repeat(2,7px);
-  align-content:center;
-  justify-content:center;
-  gap:3px;
-  box-shadow:0 4px 10px #193d3226
-}
-.brand-mark span {
-  background:#e5f3e9;
-  border-radius:1.5px
-}
-.brand-mark span:nth-child(2) {
-  opacity:.58
-}
-.brand-mark span:nth-child(3) {
-  opacity:.76
+.brand-logo {
+  width:42px;
+  height:42px;
+  object-fit:contain;
+  flex:none
 }
 .brand strong {
   display:block;
@@ -52,12 +35,12 @@
   line-height:1;
   letter-spacing:.11em;
   font-weight:750;
-  color:#84948b
+  color:#798994
 }
 .side-section-label {
   padding:0 14px;
   margin-bottom:12px;
-  color:#a1aca4;
+  color:#8d9fac;
   font-size:9px;
   font-weight:750;
   letter-spacing:.16em
@@ -76,26 +59,26 @@
   height:42px;
   padding:0 13px;
   text-align:left;
-  color:#5d6d64;
+  color:#59656d;
   border-radius:8px;
   font-size:12.5px;
   font-weight:570;
   transition:background .16s,color .16s
 }
 .nav-item svg {
-  color:#82958b
+  color:#7a8a95
 }
 .nav-item:hover {
   background:#f4f7f4;
-  color:var(--forest)
+  color:var(--primary)
 }
 .nav-item.active {
-  background:#eaf3ed;
-  color:#175d40;
+  background:#edf2f4;
+  color:#243b48;
   font-weight:720
 }
 .nav-item.active svg {
-  color:#207b56
+  color:#243b48
 }
 .nav-item span {
   flex:1
@@ -128,7 +111,7 @@
   height:34px;
   border-radius:10px;
   background:#e8e3d6;
-  color:#4e5748;
+  color:#3f4d57;
   display:grid;
   place-items:center;
   font-size:11px;
@@ -146,12 +129,12 @@
 .user-card small {
   display:block;
   margin-top:3px;
-  color:#8b9890;
+  color:#7d8d98;
   font-size:9px;
   white-space:nowrap
 }
 .user-card svg {
-  color:#a6afa7
+  color:#90a2af
 }
 .workspace {
   min-width:0;
@@ -176,14 +159,14 @@
   gap:10px;
   white-space:nowrap;
   font-size:12px;
-  color:#93a097
+  color:#8394a0
 }
 .breadcrumb strong {
-  color:#52665a;
+  color:#545e66;
   font-weight:650
 }
 .breadcrumb svg {
-  color:#afbab1
+  color:#99acba
 }
 .top-search {
   height:39px;
@@ -198,10 +181,10 @@
   align-items:center;
   gap:9px;
   padding:0 11px;
-  color:#9aa99e
+  color:#8b9ca9
 }
 .top-search:focus-within {
-  border-color:#8db69b;
+  border-color:#95a8b6;
   background:white
 }
 .top-search input {
@@ -214,15 +197,15 @@
   color:var(--ink)
 }
 .top-search input::placeholder {
-  color:#9daaa0
+  color:#8b9daa
 }
 .top-search kbd {
   font-family:var(--font-geist-mono),monospace;
   font-size:9px;
-  border:1px solid #e0e7e0;
+  border:1px solid #dae2e7;
   border-radius:4px;
   padding:3px 5px;
-  color:#9ba99e;
+  color:#8b9ca9;
   white-space:nowrap
 }
 .top-actions {
@@ -230,52 +213,29 @@
   align-items:center;
   gap:15px
 }
-.workspace-chip {
-  color:#8b9990;
-  font-size:10px;
-  white-space:nowrap
-}
-.workspace-chip span,.banner-kicker span {
-  display:inline-block;
-  width:6px;
-  height:6px;
-  background:#46aa77;
-  border-radius:50%;
-  margin-right:7px;
-  vertical-align:2px
-}
 .icon-button {
   border:0;
   background:transparent;
   display:grid;
   place-items:center;
-  color:#6f8075;
+  color:#697680;
   width:33px;
   height:33px;
   border-radius:7px
 }
 .icon-button:hover {
-  background:#f1f5f1;
-  color:var(--forest)
+  background:#e8eff5;
+  color:var(--primary)
 }
 .notification-button {
   position:relative
 }
-.notification-button i {
-  position:absolute;
-  width:5px;
-  height:5px;
-  border-radius:50%;
-  background:#bd7541;
-  right:6px;
-  top:6px
-}
 .top-avatar {
   width:32px;
   height:32px;
-  border-radius:50%;
-  background:#dfece4;
-  color:#315c43
+  border-radius:7px;
+  background:#e9edf0;
+  color:#334a58
 }
 .menu-button {
   display:none
@@ -288,7 +248,7 @@
   background:#fff;
   border:1px solid var(--line);
   border-radius:12px;
-  box-shadow:0 22px 60px #16332925;
+  box-shadow:0 22px 60px #252d3325;
   padding:16px;
   z-index:25
 }
@@ -306,7 +266,7 @@
   padding:12px 0;
   border-bottom:1px solid var(--line);
   font-size:12px;
-  color:#5c6b60;
+  color:#58636b;
   line-height:1.45
 }
 .notification-popover p svg {
@@ -331,7 +291,7 @@
   font-size:9px;
   font-weight:780;
   letter-spacing:.16em;
-  color:#82948a
+  color:#798994
 }
 .eyebrow {
   display:flex;
@@ -342,18 +302,18 @@
 .eyebrow-line {
   width:18px;
   height:1px;
-  background:#6a997a
+  background:#7d8d99
 }
 .page-heading h1 {
   font-size:31px;
   line-height:1.1;
   font-weight:760;
   letter-spacing:-.06em;
-  color:#1d2e25
+  color:#21292e
 }
 .page-heading p {
   margin-top:7px;
-  color:#7c8c80;
+  color:#73818c;
   font-size:12.5px;
   line-height:1.5
 }
@@ -378,23 +338,23 @@
   transition:background .16s,border-color .16s,transform .12s,box-shadow .16s
 }
 .button.primary {
-  background:#1f5b43;
-  border:1px solid #1f5b43;
+  background:var(--primary);
+  border:1px solid var(--primary);
   color:#fff;
-  box-shadow:0 3px 7px #134b3120
+  box-shadow:none
 }
 .button.primary:hover {
-  background:#174934;
-  border-color:#174934;
-  box-shadow:0 5px 12px #134b312c
+  background:#1c303b;
+  border-color:#1c303b;
+  box-shadow:none
 }
 .button.secondary {
   background:white;
-  border:1px solid #dfe7df;
-  color:#314638
+  border:1px solid #dae2e7;
+  color:#323e46
 }
 .button.secondary:hover {
-  border-color:#aabdae;
+  border-color:#9bafbd;
   background:#f8fbf8
 }
 .button.compact {
@@ -408,7 +368,7 @@
 .text-link {
   border:0;
   background:transparent;
-  color:#247750;
+  color:#304b5b;
   display:inline-flex;
   align-items:center;
   gap:7px;
@@ -418,7 +378,7 @@
   white-space:nowrap
 }
 .text-link:hover {
-  color:#154d34;
+  color:#37444d;
   text-decoration:underline;
   text-underline-offset:4px
 }

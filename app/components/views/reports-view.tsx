@@ -79,10 +79,9 @@ export function ReportsView({ state, held, available, issued, faulty, openFaults
                 </section>
                 <section className="surface report-block report-aside">
                   <span className="section-kicker">NEEDS ACTION</span>
-                  <h2>{lowStock.length} at reorder level</h2>
+                  <h2>{lowStock.length} low on stock</h2>
                   <p>
-                    These equipment types have reached their configured reorder
-                    point.
+                    These equipment types have reached their low-stock alert level.
                   </p>
                   {lowStock.length ? (
                     lowStock.map((e) => (

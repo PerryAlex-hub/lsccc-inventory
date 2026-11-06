@@ -12,9 +12,6 @@
   .main-content {
     padding:32px 26px 70px
   }
-  .workspace-chip {
-    display:none
-  }
   .location-grid {
     grid-template-columns:repeat(2,minmax(0,1fr))
   }
@@ -25,7 +22,7 @@
   .sidebar {
     transform:translateX(-100%);
     transition:transform .22s ease;
-    box-shadow:10px 0 40px #122b1a21
+    box-shadow:10px 0 40px #1f262b21
   }
   .sidebar.sidebar-open {
     transform:translateX(0)
@@ -42,7 +39,7 @@
     inset:0;
     z-index:29;
     border:0;
-    background:#102b1b66
+    background:#1f262b66
   }
   .top-search {
     max-width:none
@@ -144,7 +141,7 @@
   .section-heading h2 {
     font-size:16px
   }
-  .overview-lower,.report-grid,.settings-grid {
+  .overview-lower,.report-grid {
     grid-template-columns:1fr
   }
   .attention-panel {

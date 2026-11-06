@@ -28,7 +28,10 @@ export type IconName =
   | "package"
   | "users"
   | "clock"
-  | "more";
+  | "more"
+  | "shield"
+  | "userPlus"
+  | "mail";
 
 export function Icon({
   name,
@@ -206,6 +209,24 @@ export function Icon({
         <circle cx="5" cy="12" r="1" />
         <circle cx="12" cy="12" r="1" />
         <circle cx="19" cy="12" r="1" />
+      </>
+    ),
+    shield: (
+      <>
+        <path d="M12 2.5 20 6v5.5c0 5.1-3.3 8.4-8 10-4.7-1.6-8-4.9-8-10V6l8-3.5Z" />
+        <path d="m8.5 12 2.5 2.5 4.5-5" />
+      </>
+    ),
+    userPlus: (
+      <>
+        <circle cx="9" cy="8" r="3" />
+        <path d="M3 20v-1.7A5.3 5.3 0 0 1 8.3 13h1.4a5.3 5.3 0 0 1 5.3 5.3V20H3ZM18 7v8m-4-4h8" />
+      </>
+    ),
+    mail: (
+      <>
+        <rect x="3" y="5" width="18" height="14" rx="2" />
+        <path d="m4 7 8 6 8-6" />
       </>
     ),
   };

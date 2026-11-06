@@ -200,7 +200,8 @@ export function ActionPanel({
                     label: l.name,
                   })),
                 )}
-                {input("reorder", "Reorder level", "e.g. 5", false, "number")}
+                {input("reorder", "Low-stock alert at (optional)", "e.g. 5", false, "number")}
+                <p className="field-hint">Shows a low-stock alert when available units reach this number. Use 0 to alert only when stock is empty.</p>
               </>
             ) : kind === "location" ? (
               <>
@@ -346,13 +347,6 @@ export function ActionPanel({
                 {error}
               </div>
             )}
-            <div className="form-note">
-              <Icon name="check" size={17} />
-              <span>
-                This record will update the live frontend data and stay saved in
-                this browser.
-              </span>
-            </div>
           </div>
           <div className="drawer-actions">
             <button

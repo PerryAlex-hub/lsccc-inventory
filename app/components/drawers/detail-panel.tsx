@@ -94,7 +94,7 @@ export function DetailPanel({
               <strong>{item.location}</strong>
             </div>
             <div className="detail-line">
-              <span>Reorder level</span>
+              <span>Low-stock alert at</span>
               <strong>{item.reorder} units</strong>
             </div>
             <div className="detail-line">

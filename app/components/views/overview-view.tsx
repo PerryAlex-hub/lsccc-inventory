@@ -10,8 +10,7 @@ export function OverviewView({ state, held, available, issued, faulty, navigate,
               <div className="overview-banner">
                 <div>
                   <span className="banner-kicker">
-                    <span />
-                    LIVE STOCK POSITION
+                    CURRENT STOCK POSITION
                   </span>
                   <h2>Every asset, accounted for.</h2>
                   <p>
@@ -37,11 +36,6 @@ export function OverviewView({ state, held, available, issued, faulty, navigate,
                     {Math.round(held ? (available / held) * 100 : 0)}% currently
                     available
                   </small>
-                </div>
-                <div className="banner-decoration" aria-hidden="true">
-                  <span />
-                  <span />
-                  <span />
                 </div>
               </div>
               <div className="metric-grid">
@@ -125,11 +119,6 @@ export function OverviewView({ state, held, available, issued, faulty, navigate,
                     repairs are in progress.
                   </p>
                   <div className="attention-bottom">
-                    <div className="mini-avatars">
-                      <span>AO</span>
-                      <span>CO</span>
-                      <span>FT</span>
-                    </div>
                     <button
                       className="text-link"
                       onClick={() => navigate("maintenance")}

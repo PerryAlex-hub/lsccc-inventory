@@ -1,7 +1,7 @@
 .overview-banner {
   min-height:168px;
   border-radius:12px;
-  background:#193d32;
+  background:#263b47;
   color:white;
   padding:25px 31px;
   display:flex;
@@ -12,15 +12,11 @@
   overflow:hidden;
   isolation:isolate
 }
-.overview-banner>div:not(.banner-decoration) {
-  position:relative;
-  z-index:1
-}
 .banner-kicker {
   font-size:9px;
   font-weight:720;
   letter-spacing:.17em;
-  color:#b9d7c4
+  color:#cbd2d7
 }
 .overview-banner h2 {
   font-size:23px;
@@ -31,7 +27,7 @@
 }
 .overview-banner p {
   font-size:11.5px;
-  color:#b9d4c4;
+  color:#c8cfd4;
   line-height:1.6;
   margin-top:8px;
   max-width:480px
@@ -51,12 +47,12 @@
   display:inline-block;
   margin-left:12px;
   font-size:10px;
-  color:#c1d8c6;
+  color:#ccd3d8;
   line-height:1.45
 }
 .banner-meter {
   height:5px;
-  background:#496b58;
+  background:#58636b;
   border-radius:5px;
   margin-top:15px;
   overflow:hidden
@@ -64,36 +60,14 @@
 .banner-meter i {
   display:block;
   height:100%;
-  background:#91d7a9;
+  background:#cbd2d7;
   border-radius:5px
 }
 .banner-figure small {
   font-size:9px;
-  color:#b7d2bf;
+  color:#c6cdd2;
   display:block;
   margin-top:7px
-}
-.banner-decoration {
-  position:absolute;
-  right:8%;
-  bottom:-125px;
-  width:260px;
-  height:260px;
-  border:1px solid #8ebe9a26;
-  border-radius:50%;
-  z-index:0
-}
-.banner-decoration span {
-  position:absolute;
-  inset:25px;
-  border:1px solid #8ebe9a24;
-  border-radius:50%
-}
-.banner-decoration span:nth-child(2) {
-  inset:55px
-}
-.banner-decoration span:nth-child(3) {
-  inset:85px
 }
 .metric-grid {
   display:grid;
@@ -114,7 +88,7 @@
   transition:border-color .2s,transform .2s
 }
 .metric:hover {
-  border-color:#c7d9ca;
+  border-color:#cdd4d9;
   transform:translateY(-2px)
 }
 .metric-top {
@@ -126,7 +100,7 @@
 .metric-top>span:first-child {
   font-size:10.5px;
   font-weight:650;
-  color:#798a7d
+  color:#71808a
 }
 .metric-icon {
   width:28px;
@@ -134,12 +108,13 @@
   display:grid;
   place-items:center;
   border-radius:7px;
-  color:#7b9384;
-  background:#f1f5f1
+  color:#596c78;
+  background:#f4f6f7;
+  border:1px solid #e6ebee
 }
 .metric-icon.green {
-  background:#e9f5ec;
-  color:#3c9a67
+  background:#edf3ef;
+  color:#3f725b
 }
 .metric-icon.amber {
   background:#fdf4e8;
@@ -157,7 +132,7 @@
   display:block;
   margin-top:8px;
   font-size:10px;
-  color:#9aa89c
+  color:#8a9ba8
 }
 .section-heading {
   display:flex;
@@ -192,7 +167,7 @@ thead {
 }
 th {
   text-align:left;
-  color:#88988c;
+  color:#7d8d98;
   font-weight:700;
   font-size:9.5px;
   letter-spacing:.05em;
@@ -201,21 +176,21 @@ th {
   white-space:nowrap
 }
 td {
-  border-top:1px solid #edf1ed;
+  border-top:1px solid #e4ebf1;
   padding:13px 16px;
   font-size:11.5px;
-  color:#455649;
+  color:#3e4c56;
   white-space:nowrap
 }
 td strong {
   font-size:11.5px;
   font-weight:710;
-  color:#25382c
+  color:#283138
 }
 td small {
   display:block;
   margin-top:5px;
-  color:#9aa89d;
+  color:#8a9ba8;
   font-size:9.5px
 }
 .inventory-table th:first-child,.inventory-table td:first-child {
@@ -239,10 +214,10 @@ td small {
 .equipment-icon {
   width:36px;
   height:36px;
-  border:1px solid #e2ece3;
-  background:#f4f8f4;
-  color:#4b8061;
-  border-radius:8px;
+  border:1px solid #dfe7ec;
+  background:#f6f8f9;
+  color:#465b67;
+  border-radius:6px;
   display:grid;
   place-items:center
 }
@@ -256,8 +231,8 @@ td small {
 .category-tag {
   display:inline-block;
   background:#f4f6f4;
-  color:#66796a;
-  border:1px solid #e9eeea;
+  color:#637079;
+  border:1px solid #e1e9ee;
   border-radius:5px;
   padding:5px 7px;
   font-size:9.5px
@@ -277,15 +252,15 @@ td small {
 .row-arrow {
   border:0;
   background:transparent;
-  color:#9caaa0;
+  color:#8b9daa;
   padding:5px;
   border-radius:5px;
   display:grid;
   place-items:center
 }
 .row-arrow:hover {
-  background:#eaf3ec;
-  color:#2d7851
+  background:#e6edf3;
+  color:#626f78
 }
 .overview-lower {
   display:grid;
@@ -312,7 +287,7 @@ td small {
   gap:12px;
   min-height:55px;
   padding:9px 0;
-  border-bottom:1px solid #edf1ed
+  border-bottom:1px solid #e4ebf1
 }
 .movement-icon {
   width:31px;
@@ -320,12 +295,12 @@ td small {
   border-radius:7px;
   display:grid;
   place-items:center;
-  color:#647b70;
-  background:#f0f5f1
+  color:#526773;
+  background:#f2f5f6
 }
 .movement-icon.type-receipt,.movement-icon.type-repair {
-  color:#3c8e60;
-  background:#eaf5ed
+  color:#3f725b;
+  background:#edf3ef
 }
 .movement-icon.type-fault {
   color:#b57b39;
@@ -338,15 +313,15 @@ td small {
 .movement-copy strong {
   font-size:10.5px;
   font-weight:710;
-  color:#334b3a
+  color:#36424b
 }
 .movement-copy strong span {
   font-weight:580;
-  color:#5a6e5e
+  color:#5a666e
 }
 .movement-copy p {
   font-size:10px;
-  color:#91a096;
+  color:#8394a0;
   margin-top:4px;
   white-space:nowrap;
   overflow:hidden;
@@ -355,18 +330,18 @@ td small {
 .movement-copy small {
   display:block;
   font-size:9px;
-  color:#a2ada4;
+  color:#8ea0ad;
   margin-top:7px
 }
 .movement-row time {
   font-size:9.5px;
-  color:#a3afa5;
+  color:#90a2af;
   white-space:nowrap;
   margin-left:auto
 }
 .attention-panel {
-  background:#eaf3ec;
-  border:1px solid #dfebdf;
+  background:#e6edf3;
+  border:1px solid #dee6eb;
   border-radius:10px;
   padding:23px 25px;
   display:flex;
@@ -377,7 +352,7 @@ td small {
   display:flex;
   align-items:center;
   gap:10px;
-  color:#608269;
+  color:#6b7882;
   font-size:9px;
   font-weight:780;
   letter-spacing:.12em
@@ -387,9 +362,9 @@ td small {
   height:29px;
   display:grid;
   place-items:center;
-  background:#d7eadb;
+  background:#e5ebee;
   border-radius:7px;
-  color:#3b8058
+  color:#405b6a
 }
 .attention-panel>strong {
   font-size:23px;
@@ -401,7 +376,7 @@ td small {
 .attention-panel>p {
   font-size:11.5px;
   line-height:1.6;
-  color:#698171;
+  color:#6a7781;
   margin-top:10px;
   max-width:300px
 }
@@ -412,27 +387,4 @@ td small {
   gap:8px;
   margin-top:auto;
   padding-top:21px
-}
-.mini-avatars {
-  display:flex;
-  padding-left:2px
-}
-.mini-avatars span {
-  width:25px;
-  height:25px;
-  border:2px solid #eaf3ec;
-  border-radius:50%;
-  margin-left:-3px;
-  display:grid;
-  place-items:center;
-  font-size:7px;
-  font-weight:780;
-  background:#bcd6c4;
-  color:#315c43
-}
-.mini-avatars span:nth-child(2) {
-  background:#d5dfc6
-}
-.mini-avatars span:nth-child(3) {
-  background:#d8e6d6
 }

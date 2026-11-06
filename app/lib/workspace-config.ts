@@ -55,7 +55,7 @@ export const headings: Record<View, { title: string; description: string }> = {
   },
   settings: {
     title: "Settings",
-    description: "Workspace preferences and demo data controls.",
+    description: "Manage team access and workspace permissions.",
   },
 };
 

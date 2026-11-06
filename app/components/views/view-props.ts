@@ -25,5 +25,4 @@ export type WorkspaceViewProps = {
   setForm: (kind: FormKind) => void;
   setDetail: (id: string) => void;
   updateFault: (fault: Fault, status: Fault["status"]) => void;
-  resetData: () => void;
 };
