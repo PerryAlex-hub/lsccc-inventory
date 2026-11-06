@@ -2,7 +2,7 @@
 
 import { cn } from "@/app/lib/cn";
 import { useEffect, useMemo, useRef, useState } from "react";
-import type { Fault } from "../lib/demo-data";
+import type { Fault, InventoryState } from "../lib/demo-data";
 import type { RepairDetails } from "../lib/inventory-actions";
 import { formTitles, headings, type FormKind, type View } from "../lib/workspace-config";
 import { sum } from "../lib/workspace-utils";
@@ -23,9 +23,20 @@ import { ReportsView } from "./views/reports-view";
 import { TeamSettingsView } from "./views/team-settings-view";
 import type { WorkspaceViewProps } from "./views/view-props";
 
-export default function InventoryWorkspace() {
-  const { state, ready, submitForm, updateFault, exportInventory, exportMovements } =
-    useInventoryData();
+export default function InventoryWorkspace({
+  initialState,
+}: {
+  initialState: InventoryState;
+}) {
+  const {
+    state,
+    ready,
+    syncError,
+    submitForm,
+    updateFault,
+    exportInventory,
+    exportMovements,
+  } = useInventoryData(initialState);
   const [view, setView] = useState<View>("overview");
   const [form, setForm] = useState<FormKind | null>(null);
   const [formEquipmentId, setFormEquipmentId] = useState<string | null>(null);
@@ -111,8 +122,8 @@ export default function InventoryWorkspace() {
   const pageCount = Math.max(1, Math.ceil(filteredEquipment.length / 6));
   const visibleEquipment = filteredEquipment.slice((page - 1) * 6, page * 6);
   const selected = state.equipment.find((item) => item.id === detail);
-  const handleSubmit = (kind: FormKind, fields: Record<string, string>) => {
-    const error = submitForm(kind, fields);
+  const handleSubmit = async (kind: FormKind, fields: Record<string, string>) => {
+    const error = await submitForm(kind, fields);
     if (!error) {
       setForm(null);
       setFormEquipmentId(null);
@@ -126,12 +137,12 @@ export default function InventoryWorkspace() {
     }
     return error;
   };
-  const handleUpdateFault = (
+  const handleUpdateFault = async (
     fault: Fault,
     status: Fault["status"],
     details?: RepairDetails,
   ) => {
-    const error = updateFault(fault, status, details);
+    const error = await updateFault(fault, status, details);
     if (error) return error;
     setToast(
       status === "Resolved" ? "Repair marked complete" : "Maintenance progress updated",
@@ -224,6 +235,14 @@ export default function InventoryWorkspace() {
             exportInventory={handleExportInventory}
             exportMovements={handleExportMovements}
           />
+          {syncError && (
+            <p
+              role="alert"
+              className="mb-5 rounded-lg border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900"
+            >
+              {syncError}
+            </p>
+          )}
           {view === "overview" && <OverviewView {...viewProps} />}
           {view === "inventory" && <InventoryView {...viewProps} />}
           {view === "receipts" && <ReceiptsView {...viewProps} />}

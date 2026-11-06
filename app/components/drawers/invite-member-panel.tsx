@@ -9,16 +9,20 @@ import { Icon } from "../ui/icons";
 
 type Props = {
   onClose: () => void;
-  onInvite: (email: string, role: TeamRole) => string | null;
+  onInvite: (email: string, role: TeamRole) => Promise<string | null>;
 };
 
 export function InviteMemberPanel({ onClose, onInvite }: Props) {
   const [email, setEmail] = useState("");
   const [role, setRole] = useState<TeamRole>("Inventory officer");
   const [error, setError] = useState("");
-  const submit = (event: FormEvent<HTMLFormElement>) => {
+  const [pending, setPending] = useState(false);
+  const submit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const nextError = onInvite(email, role);
+    if (pending) return;
+    setPending(true);
+    const nextError = await onInvite(email, role);
+    setPending(false);
     if (nextError) setError(nextError);
     else onClose();
   };
@@ -110,7 +114,7 @@ export function InviteMemberPanel({ onClose, onInvite }: Props) {
               <p>
                 {role === "Administrator"
                   ? "Can manage inventory, reports, team members and roles."
-                  : "Can record stock, issues, returns, maintenance and view reports."}
+                  : "Can record stock, issues, maintenance and view reports."}
               </p>
             </div>
             {error && (
@@ -134,8 +138,8 @@ export function InviteMemberPanel({ onClose, onInvite }: Props) {
             <Button type="button" onClick={onClose} variant="secondary">
               Cancel
             </Button>
-            <Button type="submit" variant="primary">
-              Add invitation
+            <Button type="submit" variant="primary" disabled={pending}>
+              {pending ? "Sending…" : "Send invitation"}
             </Button>
           </div>
         </form>

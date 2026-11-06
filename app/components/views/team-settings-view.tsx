@@ -1,311 +1,284 @@
 "use client";
 
-import { cn } from "@/app/lib/cn";
-import { Button } from "@/app/components/ui/button";
-import { Select } from "../ui/select";
 import { useState } from "react";
-import Image from "next/image";
-import Link from "next/link";
-import { formatDate } from "../../lib/demo-data";
-import { useTeamAccess, type TeamRole } from "../../hooks/use-team-access";
-import { InviteMemberPanel } from "../drawers/invite-member-panel";
+import { Button } from "../ui/button";
+import { Select } from "../ui/select";
 import { Icon } from "../ui/icons";
+import { InviteMemberPanel } from "../drawers/invite-member-panel";
+import { DeleteMemberDialog } from "../drawers/delete-member-dialog";
+import { useAccount } from "../account-provider";
+import { useTeamAccess } from "../../hooks/use-team-access";
+import { initials, type Member } from "../../lib/access";
+import { apiRequest } from "../../lib/api-client";
+import { formatDateTime } from "../../lib/workspace-utils";
+
+const roles = ["Inventory officer", "Administrator"].map((value) => ({
+  value,
+  label: value,
+}));
 
 export function TeamSettingsView() {
+  const user = useAccount();
+  const admin = user.role === "Administrator";
+  const team = useTeamAccess(admin);
   const [inviting, setInviting] = useState(false);
-  const { invitations, addInvitation, changeRole, cancelInvitation } = useTeamAccess();
+  const [deleting, setDeleting] = useState<Member | null>(null);
+  const [signingOut, setSigningOut] = useState(false);
+  const [signOutError, setSignOutError] = useState("");
+
+  async function signOut() {
+    setSigningOut(true);
+    try {
+      await apiRequest("/api/auth/sign-out", { method: "POST", body: {} });
+      // eslint-disable-next-line @next/next/no-location-assign-relative-destination -- Discard all prefetched account data after signing out.
+      window.location.assign("/sign-in");
+    } catch {
+      setSignOutError("Couldn’t sign out. Check your connection and try again.");
+      setSigningOut(false);
+    }
+  }
+
   return (
-    <div className="grid gap-4.5">
-      <section
-        className={cn(
-          "flex items-end justify-between gap-6 rounded-[8px] border border-[#e0e8ec] bg-[#edf2f4] px-6.5 py-6",
-          "[&_h2]:mt-2.25 [&_h2]:text-[22px] [&_h2]:font-[720] [&_h2]:text-[#263b47]",
-          "[&_p]:mt-1.5 [&_p]:text-[12px] [&_p]:leading-[1.5] [&_p]:text-[#6e7a82]",
-          "max-[561px]:flex-col max-[561px]:items-start max-[561px]:px-5.25 max-[561px]:py-5.25",
-        )}
-      >
-        <div>
-          <span className="text-[9px] font-[780] tracking-[.16em] text-[#798994]">
-            PEOPLE & PERMISSIONS
-          </span>
-          <h2>Team access</h2>
-          <p>Control who can work with stock records and who can manage the workspace.</p>
+    <div className="grid gap-5">
+      <section className="flex flex-wrap items-center justify-between gap-5 rounded-lg border border-line bg-white p-5 sm:p-6">
+        <div className="min-w-0">
+          <h2 className="text-lg font-semibold">Your account</h2>
+          <p className="mt-2 text-sm wrap-anywhere">
+            {user.name} · {user.email}
+          </p>
+          <p className="mt-1 text-xs text-muted">
+            {user.role} · Lagos State Command & Control Centre
+          </p>
         </div>
-        <Button onClick={() => setInviting(true)} variant="primary">
-          <Icon name="userPlus" size={17} /> Invite member
+        <Button variant="secondary" disabled={signingOut} onClick={signOut}>
+          {signingOut ? "Signing out…" : "Sign out"}
         </Button>
+        {signOutError && (
+          <p role="alert" className="w-full text-sm text-red-700">
+            {signOutError}
+          </p>
+        )}
       </section>
-
-      <section
-        className="rounded-[8px] border border-line bg-white"
-        aria-labelledby="people-title"
-      >
-        <div
-          className={cn(
-            "[&_p]:mt-1.5 [&_p]:text-[12px] [&_p]:leading-[1.5] [&_p]:text-[#6e7a82]",
-            "flex items-start justify-between gap-5 px-6.25 pt-5.5 pb-4.75",
-            "[&_h3]:text-[15px] [&_h3]:font-[720] [&_h3]:tracking-[-.025em]",
-            "max-[561px]:px-5 max-[561px]:py-5",
-          )}
-        >
-          <div>
-            <h3 id="people-title">People with access</h3>
-            <p>
-              One current administrator · {invitations.length} pending invitation
-              {invitations.length === 1 ? "" : "s"}
-            </p>
-          </div>
-          <span className="text-[11px] font-[650] whitespace-nowrap text-[#65727b]">
-            {invitations.length + 1} total
-          </span>
-        </div>
-        <div>
-          <div
-            className={cn(
-              "grid min-h-18.5 grid-cols-[38px_minmax(0,1fr)_165px_76px_34px] items-center gap-3.5 border-t border-t-line",
-              "px-6.25 py-3",
-              "max-[801px]:grid-cols-[38px_minmax(0,1fr)_34px]",
-              "max-[561px]:px-5 max-[561px]:py-3",
-            )}
-          >
-            <div className="grid h-9 w-9 place-items-center rounded-[7px] bg-[#dfe8ed] text-[11px] font-[760] text-[#2c4958]">
-              AO
+      {admin && (
+        <>
+          <section className="flex flex-wrap items-end justify-between gap-5 rounded-lg border border-line bg-[#edf2f4] p-5 sm:p-6">
+            <div>
+              <h2 className="text-xl font-semibold">Team access</h2>
+              <p className="mt-2 max-w-xl text-sm leading-6 text-muted">
+                Invite staff by email and manage their permissions. Invitations expire
+                after 48 hours; resending replaces the previous link.
+              </p>
             </div>
+            <Button
+              variant="primary"
+              disabled={team.busy}
+              onClick={() => setInviting(true)}
+            >
+              <Icon name="userPlus" size={17} />
+              Invite member
+            </Button>
+          </section>
+          {team.error && (
             <div
-              className={cn(
-                "min-w-0",
-                "[&_strong]:block [&_strong]:overflow-hidden [&_strong]:text-ellipsis [&_strong]:whitespace-nowrap",
-                "[&_strong]:text-[12px] [&_strong]:font-[690]",
-                "[&_small]:mt-1 [&_small]:block [&_small]:text-[10.5px] [&_small]:text-[#8a979f]",
-              )}
+              role="alert"
+              className="rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-800"
             >
-              <strong>
-                Admin Officer{" "}
-                <span className="ml-1.5 text-[10px] font-[560] text-[#88949b]">You</span>
-              </strong>
-              <small>Current account</small>
-            </div>
-            <span
-              className={cn(
-                "text-[11.5px] font-[620] text-[#43525c]",
-                "max-[801px]:col-start-2",
-              )}
-            >
-              Administrator
-            </span>
-            <span
-              className={cn(
-                "text-[10.5px] font-[710] text-[#3f725b]",
-                "max-[801px]:col-start-2 max-[801px]:row-start-3",
-              )}
-            >
-              Active
-            </span>
-            <span
-              className={cn(
-                "w-8.5",
-                "max-[801px]:col-start-3 max-[801px]:[grid-row:1_/_span_3]",
-              )}
-            />
-          </div>
-          {invitations.map((invitation) => (
-            <div
-              className={cn(
-                "grid min-h-18.5 grid-cols-[38px_minmax(0,1fr)_165px_76px_34px] items-center gap-3.5 border-t border-t-line",
-                "px-6.25 py-3",
-                "max-[801px]:grid-cols-[38px_minmax(0,1fr)_34px]",
-                "max-[561px]:px-5 max-[561px]:py-3",
-              )}
-              key={invitation.id}
-            >
-              <div className="grid h-9 w-9 place-items-center rounded-[7px] bg-[#f0f2f3] text-[11px] font-[760] text-[#71818b]">
-                <Icon name="mail" size={18} />
-              </div>
-              <div
-                className={cn(
-                  "min-w-0",
-                  "[&_strong]:block [&_strong]:overflow-hidden [&_strong]:text-ellipsis [&_strong]:whitespace-nowrap",
-                  "[&_strong]:text-[12px] [&_strong]:font-[690]",
-                  "[&_small]:mt-1 [&_small]:block [&_small]:text-[10.5px] [&_small]:text-[#8a979f]",
-                )}
-              >
-                <strong>{invitation.email}</strong>
-                <small>Added {formatDate(invitation.createdAt)}</small>
-              </div>
-              <div className="min-w-0 max-[801px]:col-start-2">
-                <Select
-                  label={`Role for ${invitation.email}`}
-                  value={invitation.role}
-                  onValueChange={(value) => changeRole(invitation.id, value as TeamRole)}
-                  options={["Inventory officer", "Administrator"].map((value) => ({
-                    value,
-                    label: value,
-                  }))}
-                />
-              </div>
-
-              <span
-                className={cn(
-                  "text-[10.5px] font-[710] text-[#966c3a]",
-                  "max-[801px]:col-start-2 max-[801px]:row-start-3",
-                )}
-              >
-                Pending
-              </span>
-              <button
-                className={cn(
-                  "grid h-8.25 w-8.25 place-items-center rounded-[7px] border-0 bg-transparent text-[#8a979f]",
-                  "max-[801px]:col-start-3 max-[801px]:[grid-row:1_/_span_3]",
-                  "hover:bg-[#e8eff5] hover:text-primary",
-                )}
-                aria-label={`Cancel invitation for ${invitation.email}`}
-                onClick={() => cancelInvitation(invitation.id)}
-              >
-                <Icon name="close" size={16} />
+              {team.error}
+              <button className="ml-3 underline" onClick={team.refresh}>
+                Reload team
               </button>
             </div>
-          ))}
-        </div>
-        {invitations.length === 0 && (
-          <div
-            className={cn(
-              "flex items-center gap-2.25 border-t border-t-line px-6.25 py-4.25 text-[11.5px] text-[#77858e]",
-              "max-[561px]:px-5 max-[561px]:py-4.25",
-            )}
-          >
-            <Icon name="userPlus" size={19} />
-            <span>
-              Invite an inventory officer or another administrator to work with you.
-            </span>
-          </div>
-        )}
-      </section>
-
-      <div
-        className={cn(
-          "grid grid-cols-[minmax(0,1.2fr)_minmax(280px,.8fr)] gap-4.5",
-          "max-[801px]:grid-cols-[1fr]",
-        )}
-      >
-        <section
-          className="rounded-[8px] border border-line bg-white"
-          aria-labelledby="roles-title"
-        >
-          <div
-            className={cn(
-              "[&_p]:mt-1.5 [&_p]:text-[12px] [&_p]:leading-[1.5] [&_p]:text-[#6e7a82]",
-              "flex items-start justify-between gap-5 px-6.25 pt-5.5 pb-4.75",
-              "[&_h3]:text-[15px] [&_h3]:font-[720] [&_h3]:tracking-[-.025em]",
-              "max-[561px]:px-5 max-[561px]:py-5",
-            )}
-          >
-            <div>
-              <h3 id="roles-title">Roles and permissions</h3>
-              <p>Assign the access each person needs.</p>
+          )}
+          {team.notice && (
+            <p
+              role="status"
+              className="rounded-lg border border-[#cadfce] bg-[#edf3ef] p-4 text-sm text-[#365641]"
+            >
+              {team.notice}
+            </p>
+          )}
+          <section className="min-w-0 rounded-lg border border-line bg-white">
+            <div className="p-5 sm:p-6">
+              <h3 className="font-semibold">People with access</h3>
+              <p className="mt-1 text-xs text-muted">
+                Administrators manage members and roles. Inventory officers record
+                receipts, issues, faults and repairs, and view reports.
+              </p>
+              <p className="mt-2 text-xs leading-5 text-muted">
+                Revoke access to sign someone out immediately. Once access is revoked, you
+                can permanently delete their account while keeping inventory and activity
+                records.
+              </p>
             </div>
-          </div>
-          <div
-            className={cn(
-              "mx-6.25 my-0 flex items-start gap-3.25 border-t border-t-line px-0 py-4.25",
-              "[&_strong]:text-[12px] [&_strong]:font-[690]",
-              "[&_p]:mt-1.25 [&_p]:text-[11px] [&_p]:leading-[1.5] [&_p]:text-[#7b8991]",
-              "max-[561px]:mx-5 max-[561px]:my-0",
+            {team.loading && (
+              <p role="status" className="p-5 text-sm text-muted">
+                Loading team…
+              </p>
             )}
-          >
-            <span className="grid h-8.5 w-8.5 flex-none place-items-center rounded-[6px] bg-[#eef2f4] text-[#3d5663]">
-              <Icon name="shield" size={19} />
-            </span>
-            <div>
-              <strong>Administrator</strong>
-              <p>Manage all inventory activity, reporting, members and roles.</p>
+            {team.members.map((member) => (
+              <div
+                key={member.id}
+                role="group"
+                aria-label={`Account: ${member.email}`}
+                className="flex flex-wrap items-center gap-3 border-t border-line p-5 sm:px-6"
+              >
+                <span className="grid size-9 shrink-0 place-items-center rounded-lg bg-[#dfe8ed] text-xs font-bold">
+                  {initials(member.name)}
+                </span>
+                <div className="min-w-0 flex-1 basis-40">
+                  <p className="text-sm font-semibold wrap-anywhere">
+                    {member.name}
+                    {member.id === user.id && " (You)"}
+                  </p>
+                  <p className="mt-1 text-xs wrap-anywhere text-muted">
+                    {member.email} · {member.active ? "Active" : "Access disabled"}
+                  </p>
+                </div>
+                <div className="w-full sm:w-44">
+                  <Select
+                    label={`Role for ${member.name}`}
+                    value={member.role}
+                    disabled={team.busy || member.id === user.id}
+                    options={roles}
+                    onValueChange={(role) => {
+                      void team.update({
+                        target: "member",
+                        id: member.id,
+                        action: "role",
+                        role,
+                      });
+                    }}
+                  />
+                </div>
+                {member.id !== user.id && (
+                  <Button
+                    variant="secondary"
+                    disabled={team.busy}
+                    onClick={() => {
+                      void team.update({
+                        target: "member",
+                        id: member.id,
+                        action: member.active ? "disable" : "enable",
+                      });
+                    }}
+                  >
+                    {member.active ? "Revoke access" : "Restore access"}
+                  </Button>
+                )}
+                {member.id !== user.id && !member.active && (
+                  <Button
+                    variant="secondary"
+                    disabled={team.busy}
+                    onClick={() => setDeleting(member)}
+                    className="text-red-700"
+                  >
+                    Delete user
+                  </Button>
+                )}
+              </div>
+            ))}
+          </section>
+          <section className="min-w-0 rounded-lg border border-line bg-white">
+            <div className="p-5 sm:p-6">
+              <h3 className="font-semibold">Pending invitations</h3>
+              <p className="mt-1 text-xs text-muted">
+                If delivery fails, check Brevo configuration and resend the invitation.
+              </p>
             </div>
-          </div>
-          <div
-            className={cn(
-              "mx-6.25 my-0 flex items-start gap-3.25 border-t border-t-line px-0 py-4.25",
-              "[&_strong]:text-[12px] [&_strong]:font-[690]",
-              "[&_p]:mt-1.25 [&_p]:text-[11px] [&_p]:leading-[1.5] [&_p]:text-[#7b8991]",
-              "max-[561px]:mx-5 max-[561px]:my-0",
+            {!team.loading && !team.invitations.length && (
+              <p className="border-t border-line p-5 text-sm text-muted">
+                No pending invitations.
+              </p>
             )}
-          >
-            <span className="grid h-8.5 w-8.5 flex-none place-items-center rounded-[6px] bg-[#eef2f4] text-[#3d5663]">
-              <Icon name="box" size={19} />
-            </span>
-            <div>
-              <strong>Inventory officer</strong>
-              <p>Record receipts, equipment issues and repairs; view reports.</p>
-            </div>
-          </div>
-        </section>
-        <section
-          className="rounded-[8px] border border-line bg-white"
-          aria-labelledby="organisation-title"
-        >
-          <div
-            className={cn(
-              "[&_p]:mt-1.5 [&_p]:text-[12px] [&_p]:leading-[1.5] [&_p]:text-[#6e7a82]",
-              "flex items-start justify-between gap-5 px-6.25 pt-5.5 pb-4.75",
-              "[&_h3]:text-[15px] [&_h3]:font-[720] [&_h3]:tracking-[-.025em]",
-              "max-[561px]:px-5 max-[561px]:py-5",
-            )}
-          >
-            <div>
-              <h3 id="organisation-title">Organisation</h3>
-              <p>Workspace identity</p>
-            </div>
-          </div>
-          <div
-            className={cn(
-              "[&_strong]:text-[12px] [&_strong]:font-[690]",
-              "mx-6.25 mt-0 mb-5 flex items-center gap-3.5 rounded-[6px] border border-[#e5eaed] bg-[#f9fafb] px-3.75 py-3.75",
-              "[&_img]:h-14.5 [&_img]:w-14.5 [&_img]:flex-none [&_img]:object-contain",
-              "[&_span]:mt-1 [&_span]:block [&_span]:text-[10.5px] [&_span]:text-[#7b8991]",
-              "max-[561px]:mx-5",
-            )}
-          >
-            <Image
-              src="/lsccc-logo.jpg"
-              alt="Lagos State Command and Control Centre crest"
-              width={58}
-              height={58}
-            />
-            <div>
-              <strong>Lagos State Command & Control Centre</strong>
-              <span>Inventory workspace</span>
-            </div>
-          </div>
-          <div
-            className={cn(
-              "mx-6.25 flex items-center justify-between gap-3.75 border-t border-t-line px-0 py-3 text-[11px] text-[#79868e]",
-              "my-0",
-              "[&_strong]:font-[660] [&_strong]:text-[#364955]",
-              "max-[561px]:mx-5",
-            )}
-          >
-            <span>Access owner</span>
-            <strong>Admin Officer</strong>
-          </div>
-          <div
-            className={cn(
-              "mx-6.25 flex items-center justify-between gap-3.75 border-t border-t-line px-0 py-3 text-[11px] text-[#79868e]",
-              "my-0",
-              "[&_strong]:font-[660] [&_strong]:text-[#364955]",
-              "max-[561px]:mx-5",
-            )}
-          >
-            <span>Available roles</span>
-            <strong>2</strong>
-          </div>
-        </section>
-      </div>
-      <Link
-        href="/sign-in"
-        className="inline-flex min-h-11 w-fit items-center gap-2 text-sm font-medium text-primary hover:underline"
-      >
-        Account sign-in <Icon name="arrow" size={16} />
-      </Link>
+            {team.invitations.map((invitation) => (
+              <div
+                key={invitation.id}
+                role="group"
+                aria-label={`Invitation: ${invitation.email}`}
+                className="flex flex-wrap items-center gap-3 border-t border-line p-5 sm:px-6"
+              >
+                <div className="min-w-0 flex-1 basis-48">
+                  <p className="text-sm font-semibold wrap-anywhere">
+                    {invitation.email}
+                  </p>
+                  <p className="mt-1 text-xs text-muted">
+                    {new Date(invitation.expiresAt) < new Date()
+                      ? "Expired"
+                      : `Expires ${formatDateTime(invitation.expiresAt)}`}{" "}
+                    ·{" "}
+                    {invitation.deliveryStatus === "sent"
+                      ? "Sent to Brevo"
+                      : invitation.deliveryStatus === "failed"
+                        ? "Email failed — resend needed"
+                        : "Sending email"}
+                  </p>
+                </div>
+                <div className="w-full sm:w-44">
+                  <Select
+                    label={`Role for ${invitation.email}`}
+                    value={invitation.role}
+                    disabled={team.busy}
+                    options={roles}
+                    onValueChange={(role) => {
+                      void team.update({
+                        target: "invitation",
+                        id: invitation.id,
+                        action: "role",
+                        role,
+                      });
+                    }}
+                  />
+                </div>
+                <Button
+                  variant="secondary"
+                  disabled={team.busy}
+                  onClick={() => {
+                    void team.update({
+                      target: "invitation",
+                      id: invitation.id,
+                      action: "resend",
+                    });
+                  }}
+                >
+                  Resend invitation
+                </Button>
+                <Button
+                  variant="secondary"
+                  disabled={team.busy}
+                  onClick={() => {
+                    void team.update({
+                      target: "invitation",
+                      id: invitation.id,
+                      action: "cancel",
+                    });
+                  }}
+                >
+                  Revoke invitation
+                </Button>
+              </div>
+            ))}
+          </section>
+        </>
+      )}
       {inviting && (
-        <InviteMemberPanel onClose={() => setInviting(false)} onInvite={addInvitation} />
+        <InviteMemberPanel
+          onClose={() => setInviting(false)}
+          onInvite={team.addInvitation}
+        />
+      )}
+      {admin && deleting && (
+        <DeleteMemberDialog
+          member={deleting}
+          onClose={() => setDeleting(null)}
+          onDelete={(confirmEmail) =>
+            team.update({
+              target: "member",
+              id: deleting.id,
+              action: "delete",
+              confirmEmail,
+            })
+          }
+        />
       )}
     </div>
   );

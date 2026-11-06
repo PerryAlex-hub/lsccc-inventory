@@ -1,67 +1,82 @@
 ﻿"use client";
 
 import { useEffect, useRef, useState } from "react";
-import {
-  equipmentName,
-  initialState,
-  type Fault,
-  type InventoryState,
-} from "../lib/demo-data";
-import {
-  applyInventoryForm,
-  transitionFault,
-  type RepairDetails,
-} from "../lib/inventory-actions";
+import { equipmentName, type Fault, type InventoryState } from "../lib/demo-data";
+import type { RepairDetails } from "../lib/inventory-actions";
+import { apiRequest } from "../lib/api-client";
 import type { FormKind } from "../lib/workspace-config";
 import { downloadCsv, formatDateTime } from "../lib/workspace-utils";
 
-const STORAGE_KEY = "lsccc-inventory-v1";
-
-export function useInventoryData() {
+export function useInventoryData(initialState: InventoryState) {
   const [state, setState] = useState<InventoryState>(initialState);
-  const stateRef = useRef(state);
-  const [ready, setReady] = useState(false);
+  const [syncError, setSyncError] = useState("");
+  const saving = useRef(false);
+  const version = useRef(0);
+  const retry = useRef<{ payload: string; key: string } | null>(null);
 
   useEffect(() => {
-    const frame = window.requestAnimationFrame(() => {
+    const controller = new AbortController();
+    async function refresh() {
+      if (document.visibilityState !== "visible" || saving.current) return;
+      const requestVersion = ++version.current;
       try {
-        const saved = localStorage.getItem(STORAGE_KEY);
-        if (saved) {
-          const restored = JSON.parse(saved) as InventoryState;
-          stateRef.current = restored;
-          setState(restored);
+        const result = await apiRequest<{ state: InventoryState }>("/api/inventory", {
+          signal: controller.signal,
+        });
+        if (version.current === requestVersion && !saving.current) {
+          setState(result.state);
+          setSyncError("");
         }
       } catch {
-        /* A fresh workspace is safe if local storage is unavailable. */
+        if (!controller.signal.aborted)
+          setSyncError(
+            "The shared records could not be refreshed. Check your connection; saving still requires the server.",
+          );
       }
-      setReady(true);
-    });
-    return () => window.cancelAnimationFrame(frame);
+    }
+    const timer = window.setInterval(refresh, 30000);
+    window.addEventListener("focus", refresh);
+    return () => {
+      controller.abort();
+      clearInterval(timer);
+      window.removeEventListener("focus", refresh);
+    };
   }, []);
 
-  useEffect(() => {
-    if (!ready) return;
+  async function commit(body: unknown) {
+    if (saving.current) return "Another change is being saved. Please wait.";
+    saving.current = true;
+    version.current += 1;
+    const payload = JSON.stringify(body);
+    const key =
+      retry.current?.payload === payload ? retry.current.key : crypto.randomUUID();
+    retry.current = { payload, key };
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-    } catch {
-      /* Local data remains usable for this session. */
-    }
-  }, [state, ready]);
-
-  function commit(result: { state: InventoryState; error: string | null }) {
-    if (!result.error) {
-      stateRef.current = result.state;
+      const result = await apiRequest<{ state: InventoryState }>("/api/inventory", {
+        method: "POST",
+        body,
+        requestKey: key,
+      });
       setState(result.state);
+      retry.current = null;
+      setSyncError("");
+      return null;
+    } catch (error) {
+      return error instanceof Error
+        ? error.message
+        : "Couldn’t save this change. Try again.";
+    } finally {
+      saving.current = false;
+      version.current += 1;
     }
-    return result.error;
   }
 
   function submitForm(kind: FormKind, fields: Record<string, string>) {
-    return commit(applyInventoryForm(stateRef.current, kind, fields));
+    return commit({ kind, fields });
   }
 
   function updateFault(fault: Fault, status: Fault["status"], details?: RepairDetails) {
-    return commit(transitionFault(stateRef.current, fault.id, status, details));
+    return commit({ action: "maintenance", id: fault.id, status, details });
   }
 
   const exportInventory = () => {
@@ -111,5 +126,13 @@ export function useInventoryData() {
     ]);
   };
 
-  return { state, ready, submitForm, updateFault, exportInventory, exportMovements };
+  return {
+    state,
+    ready: true,
+    syncError,
+    submitForm,
+    updateFault,
+    exportInventory,
+    exportMovements,
+  };
 }

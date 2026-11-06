@@ -1,4 +1,6 @@
 import { cn } from "@/app/lib/cn";
+import { useAccount } from "../account-provider";
+import { initials } from "../../lib/access";
 import Image from "next/image";
 import { useEffect, useRef } from "react";
 import { useMediaQuery } from "../../hooks/use-media-query";
@@ -69,6 +71,7 @@ export function Sidebar({
   navigate,
   openFaultCount,
 }: Props) {
+  const user = useAccount();
   const mobile = useMediaQuery("(max-width: 920px)");
   const navigationRef = useRef<HTMLElement>(null);
   useEffect(() => {
@@ -172,11 +175,13 @@ export function Sidebar({
             )}
           >
             <div className="grid h-8.5 w-8.5 place-items-center rounded-[10px] bg-[#e8e3d6] text-[11px] font-[780] text-[#3f4d57]">
-              AO
+              {initials(user.name)}
             </div>
             <div>
-              <strong>Admin Officer</strong>
-              <small>Inventory administrator</small>
+              <strong className="max-w-32 truncate" title={user.name}>
+                {user.name}
+              </strong>
+              <small>{user.role}</small>
             </div>
             <Icon name="more" size={18} />
           </div>

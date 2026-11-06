@@ -1,0 +1,172 @@
+generator client {
+  provider            = "prisma-client"
+  output              = "../app/generated/prisma"
+  moduleFormat        = "cjs"
+  importFileExtension = ""
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id           String            @id @default(uuid()) @db.Uuid
+  email        String            @unique
+  name         String
+  role         String
+  active       Boolean           @default(true)
+  passwordHash String
+  createdAt    DateTime          @default(now()) @db.Timestamptz(6)
+  sessions     Session[]
+  resets       PasswordReset[]
+  auditEvents  AuditEvent[]
+  mutations    MutationRequest[]
+
+  @@map("users")
+}
+
+model Session {
+  tokenHash String   @id
+  userId    String   @db.Uuid
+  expiresAt DateTime @db.Timestamptz(6)
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([userId], map: "sessions_user")
+  @@map("sessions")
+}
+
+model Invitation {
+  id             String    @id @default(uuid()) @db.Uuid
+  email          String
+  role           String
+  tokenHash      String    @unique
+  createdAt      DateTime  @default(now()) @db.Timestamptz(6)
+  expiresAt      DateTime  @db.Timestamptz(6)
+  consumedAt     DateTime? @db.Timestamptz(6)
+  deliveryStatus String    @default("pending")
+
+  // The migration also enforces one unconsumed invitation per email.
+  @@map("invitations")
+}
+
+model PasswordReset {
+  tokenHash String   @id
+  userId    String   @db.Uuid
+  expiresAt DateTime @db.Timestamptz(6)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@map("password_resets")
+}
+
+model RateLimit {
+  key       String   @id
+  attempts  Int
+  expiresAt DateTime @db.Timestamptz(6)
+
+  @@index([expiresAt], map: "rate_limits_expiry")
+  @@map("rate_limits")
+}
+
+model Workspace {
+  id       Int @id
+  revision Int @default(0)
+
+  @@map("workspace")
+}
+
+model Equipment {
+  id        String     @id
+  name      String
+  category  String
+  location  String
+  available Int
+  issued    Int
+  faulty    Int
+  reorder   Int
+  receipts  Receipt[]
+  issues    Issue[]
+  faults    Fault[]
+  movements Movement[]
+
+  // The migration preserves the case-insensitive unique name index and balance checks.
+  @@map("equipment")
+}
+
+model Receipt {
+  id          String    @id
+  equipmentId String
+  quantity    Int
+  supplier    String
+  date        DateTime  @db.Timestamptz(6)
+  equipment   Equipment @relation(fields: [equipmentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@map("receipts")
+}
+
+model Issue {
+  id          String    @id
+  equipmentId String
+  quantity    Int
+  returned    Int       @default(0)
+  assignee    String
+  department  String
+  date        DateTime  @db.Timestamptz(6)
+  equipment   Equipment @relation(fields: [equipmentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@map("issues")
+}
+
+model Fault {
+  id          String    @id
+  equipmentId String
+  quantity    Int
+  title       String
+  location    String
+  custodian   String
+  priority    String
+  status      String
+  date        DateTime  @db.Timestamptz(6)
+  startedAt   DateTime? @db.Timestamptz(6)
+  resolvedAt  DateTime? @db.Timestamptz(6)
+  repairNotes String?
+  history     Json      @default("[]")
+  equipment   Equipment @relation(fields: [equipmentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@map("faults")
+}
+
+model Movement {
+  id          String    @id
+  type        String
+  equipmentId String
+  quantity    Int
+  description String
+  date        DateTime  @db.Timestamptz(6)
+  actor       String
+  equipment   Equipment @relation(fields: [equipmentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@map("movements")
+}
+
+model AuditEvent {
+  id        String   @id @default(uuid()) @db.Uuid
+  actorId   String?  @db.Uuid
+  actorName String?
+  action    String
+  recordId  String?
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+  actor     User?    @relation(fields: [actorId], references: [id], onDelete: SetNull, onUpdate: NoAction)
+
+  @@map("audit_events")
+}
+
+model MutationRequest {
+  key         String   @id @db.Uuid
+  userId      String?  @db.Uuid
+  fingerprint String
+  createdAt   DateTime @default(now()) @db.Timestamptz(6)
+  user        User?    @relation(fields: [userId], references: [id], onDelete: SetNull, onUpdate: NoAction)
+
+  @@map("mutation_requests")
+}

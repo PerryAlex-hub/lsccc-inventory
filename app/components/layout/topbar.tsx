@@ -1,4 +1,6 @@
 import { cn } from "@/app/lib/cn";
+import { useAccount } from "../account-provider";
+import { initials } from "../../lib/access";
 import type { RefObject } from "react";
 import type { View } from "../../lib/workspace-config";
 import { headings } from "../../lib/workspace-config";
@@ -33,6 +35,7 @@ export function Topbar({
   faulty,
   lowStockCount,
 }: Props) {
+  const user = useAccount();
   return (
     <header
       className={cn(
@@ -114,7 +117,7 @@ export function Topbar({
             "max-md:hidden",
           )}
         >
-          AO
+          {initials(user.name)}
         </div>
       </div>
       {notifications && (

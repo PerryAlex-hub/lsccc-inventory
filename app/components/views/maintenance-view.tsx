@@ -30,9 +30,13 @@ function MaintenanceCase({
   const [fixedAt, setFixedAt] = useState(localDateTime());
   const [notes, setNotes] = useState("");
   const [error, setError] = useState("");
-  const complete = (event: FormEvent) => {
+  const [pending, setPending] = useState(false);
+  const complete = async (event: FormEvent) => {
     event.preventDefault();
-    const result = updateFault(fault, "Resolved", { fixedAt, notes });
+    if (pending) return;
+    setPending(true);
+    const result = await updateFault(fault, "Resolved", { fixedAt, notes });
+    setPending(false);
     if (result) setError(result);
     else setCompleting(false);
   };
@@ -162,8 +166,11 @@ function MaintenanceCase({
         >
           <p>Next: start the repair when work begins.</p>
           <Button
-            onClick={() => {
-              const result = updateFault(fault, "In progress");
+            disabled={pending}
+            onClick={async () => {
+              setPending(true);
+              const result = await updateFault(fault, "In progress");
+              setPending(false);
               if (result) setError(result);
             }}
             variant="secondary"
@@ -250,8 +257,9 @@ function MaintenanceCase({
             >
               Cancel
             </Button>
-            <Button type="submit" variant="primary">
-              Save completed repair <Icon name="check" size={15} />
+            <Button type="submit" variant="primary" disabled={pending}>
+              {pending ? "Saving…" : "Save completed repair"}{" "}
+              <Icon name="check" size={15} />
             </Button>
           </div>
         </form>

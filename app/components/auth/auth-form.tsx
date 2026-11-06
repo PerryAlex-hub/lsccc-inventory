@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { useRef, useState, type FormEvent } from "react";
 import {
   submitAuthForm,
@@ -103,7 +103,6 @@ function PasswordField({
 }
 
 export function AuthForm({ mode }: { mode: AuthMode }) {
-  const router = useRouter();
   const params = useSearchParams();
   const token = params.get("token") || "";
   const [values, setValues] = useState<AuthValues>({
@@ -149,8 +148,10 @@ export function AuthForm({ mode }: { mode: AuthMode }) {
       return;
     }
     setValues((current) => ({ ...current, password: "", confirmPassword: "" }));
-    if (mode === "sign-in") router.replace("/#overview");
-    else {
+    if (mode === "sign-in") {
+      // eslint-disable-next-line @next/next/no-location-assign-relative-destination -- A new session must discard the anonymous router cache.
+      window.location.assign("/#overview");
+    } else {
       setSuccess(true);
       requestAnimationFrame(() => feedbackRef.current?.focus());
     }

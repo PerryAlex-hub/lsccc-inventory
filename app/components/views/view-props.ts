@@ -29,5 +29,5 @@ export type WorkspaceViewProps = {
     fault: Fault,
     status: Fault["status"],
     details?: RepairDetails,
-  ) => string | null;
+  ) => Promise<string | null>;
 };

@@ -34,8 +34,7 @@ export function validateAuthForm(mode: AuthMode, values: AuthValues): AuthErrors
 
 type AuthResult = { ok: true } | { ok: false; message: string };
 
-// The UI expects these same-origin endpoints to be supplied by the authentication
-// service. An unavailable service never creates a session or reports success.
+// Account requests are handled by the server; credentials never enter browser storage.
 export async function submitAuthForm(
   mode: AuthMode,
   values: AuthValues,
@@ -88,6 +87,18 @@ export async function submitAuthForm(
         message:
           "This link has expired. Request a new link or contact your administrator.",
       };
+    if (response.status === 429)
+      return {
+        ok: false,
+        message: "Too many attempts. Please wait 15 minutes and try again.",
+      };
+    if (
+      typeof result === "object" &&
+      result !== null &&
+      "message" in result &&
+      typeof result.message === "string"
+    )
+      return { ok: false, message: result.message };
     return { ok: false, message: "We couldn’t complete this request. Please try again." };
   } catch {
     return {

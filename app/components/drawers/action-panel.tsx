@@ -24,7 +24,7 @@ export function ActionPanel({
   state: InventoryState;
   initialEquipmentId: string | null;
   onClose: () => void;
-  onSubmit: (kind: FormKind, fields: Record<string, string>) => string | null;
+  onSubmit: (kind: FormKind, fields: Record<string, string>) => Promise<string | null>;
   onReceive: (equipmentId: string | null) => void;
 }) {
   const existing = state.equipment.find((item) => item.id === initialEquipmentId);
@@ -57,6 +57,7 @@ export function ActionPanel({
     receivedAt: localDateTime(),
   });
   const [error, setError] = useState("");
+  const [pending, setPending] = useState(false);
   const panelRef = useRef<HTMLElement>(null);
   const errorRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
@@ -170,9 +171,12 @@ export function ActionPanel({
   const isEquipment = kind === "equipment" || kind === "edit";
   const blocked =
     !isEquipment && !creating && (!selected || (kind !== "receive" && eligible === 0));
-  function handleSubmit(event: FormEvent) {
+  async function handleSubmit(event: FormEvent) {
     event.preventDefault();
-    const result = onSubmit(kind, fields);
+    if (pending) return;
+    setPending(true);
+    const result = await onSubmit(kind, fields);
+    setPending(false);
     if (result) {
       setError(result);
       requestAnimationFrame(() => errorRef.current?.focus());
@@ -455,18 +459,20 @@ export function ActionPanel({
             <Button type="button" onClick={onClose} variant="secondary">
               Cancel
             </Button>
-            <Button type="submit" disabled={blocked} variant="primary">
-              {kind === "edit"
-                ? "Save changes"
-                : kind === "receive"
-                  ? creating
-                    ? "Register & receive stock"
-                    : "Receive stock"
-                  : kind === "equipment"
-                    ? "Add equipment"
-                    : kind === "issue"
-                      ? "Issue equipment"
-                      : "Report fault"}
+            <Button type="submit" disabled={blocked || pending} variant="primary">
+              {pending
+                ? "Saving…"
+                : kind === "edit"
+                  ? "Save changes"
+                  : kind === "receive"
+                    ? creating
+                      ? "Register & receive stock"
+                      : "Receive stock"
+                    : kind === "equipment"
+                      ? "Add equipment"
+                      : kind === "issue"
+                        ? "Issue equipment"
+                        : "Report fault"}
               <Icon name="arrow" size={16} />
             </Button>
           </div>
