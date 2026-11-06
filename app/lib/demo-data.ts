@@ -36,13 +36,17 @@ export type Fault = {
   priority: "Low" | "Medium" | "High";
   status: "Reported" | "In progress" | "Resolved";
   date: string;
+  startedAt?: string;
+  resolvedAt?: string;
+  repairNotes?: string;
+  history?: { status: Fault["status"]; date: string; notes?: string }[];
 };
 export type Receipt = {
   id: string;
   equipmentId: string;
   quantity: number;
   supplier: string;
-  reference: string;
+  reference?: string;
   date: string;
 };
 export type Issue = {

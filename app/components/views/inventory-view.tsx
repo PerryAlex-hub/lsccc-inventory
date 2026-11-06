@@ -64,21 +64,9 @@ export function InventoryView({ state, available, lowStock, query, setQuery, pag
                     <option>Has faults</option>
                   </select>
                 </label>
-                <button
-                  className="button secondary compact"
-                  onClick={() => setForm("stocktake")}
-                >
-                  Stocktake
-                </button>
-                <button
-                  className="button secondary compact"
-                  onClick={() => {
-                    setForm("adjust");
-                  }}
-                >
-                  Adjust stock
-                </button>
               </div>
+              {!state.equipment.length && <div className="form-guidance"><strong>Start your equipment register</strong><p>Add an equipment type, or register it while receiving its first delivery.</p><button className="button secondary" onClick={() => setForm("receive")}>Receive your first stock <Icon name="arrow" size={16} /></button></div>}
+              {state.equipment.length > 0 && <>
               <EquipmentTable
                 items={visibleEquipment}
                 onSelect={setDetail}
@@ -111,6 +99,7 @@ export function InventoryView({ state, available, lowStock, query, setQuery, pag
                   </button>
                 </div>
               </div>
+              </>}
               <p className="help-note">
                 <Icon name="alert" size={16} /> Faulty units are counted within
                 their current custody, not added to total held.

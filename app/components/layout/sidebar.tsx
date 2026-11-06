@@ -6,10 +6,9 @@ const nav: { label: string; view: View; icon: IconName }[] = [
   { label: "Overview", view: "overview", icon: "grid" },
   { label: "Inventory", view: "inventory", icon: "box" },
   { label: "Receipts", view: "receipts", icon: "inbox" },
-  { label: "Issues & returns", view: "issues", icon: "arrows" },
+  { label: "Equipment issues", view: "issues", icon: "arrows" },
   { label: "Maintenance", view: "maintenance", icon: "tool" },
-  { label: "Locations", view: "locations", icon: "pin" },
-  { label: "Stock movements", view: "movements", icon: "history" },
+  { label: "Activity history", view: "movements", icon: "history" },
   { label: "Reports", view: "reports", icon: "chart" },
 ];
 

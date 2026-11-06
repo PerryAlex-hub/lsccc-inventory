@@ -1,6 +1,6 @@
 import { equipmentName, formatDate } from "../../lib/demo-data";
 import { sum } from "../../lib/workspace-utils";
-import { Metric } from "../ui/inventory-widgets";
+import { EmptyState, Metric } from "../ui/inventory-widgets";
 import type { WorkspaceViewProps } from "./view-props";
 
 type Props = Pick<WorkspaceViewProps, "state" | "issued">;
@@ -21,13 +21,13 @@ export function IssuesView({ state, issued }: Props) {
                   value={
                     state.issues.filter((i) => i.returned < i.quantity).length
                   }
-                  note="Awaiting full return"
+                  note="Equipment held by staff"
                 />
                 <Metric
                   icon="check"
                   label="Units returned"
                   value={sum(state.issues.map((i) => i.returned))}
-                  note="Recorded against issues"
+                  note="From earlier return records"
                   tone="green"
                 />
               </div>
@@ -77,6 +77,7 @@ export function IssuesView({ state, issued }: Props) {
                       ))}
                     </tbody>
                   </table>
+                  {!state.issues.length && <EmptyState title="No equipment assigned yet" message="Receive stock first, then choose Issue equipment to record its custodian and department." />}
                 </div>
               </div>
             </>

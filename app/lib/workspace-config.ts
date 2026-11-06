@@ -4,21 +4,15 @@ export type View =
   | "receipts"
   | "issues"
   | "maintenance"
-  | "locations"
   | "movements"
   | "reports"
   | "settings";
 export type FormKind =
   | "receive"
   | "issue"
-  | "return"
   | "fault"
   | "equipment"
-  | "edit"
-  | "location"
-  | "transfer"
-  | "adjust"
-  | "stocktake";
+  | "edit";
 export const headings: Record<View, { title: string; description: string }> = {
   overview: {
     title: "Overview",
@@ -34,20 +28,16 @@ export const headings: Record<View, { title: string; description: string }> = {
     description: "Every delivery into the equipment store, in one place.",
   },
   issues: {
-    title: "Issues & returns",
-    description: "Track who holds equipment and what has come back.",
+    title: "Equipment issues",
+    description: "Track equipment assigned to staff and departments.",
   },
   maintenance: {
     title: "Maintenance",
     description: "Report faults, follow repairs and keep custody visible.",
   },
-  locations: {
-    title: "Locations",
-    description: "Know where equipment belongs and who is responsible.",
-  },
   movements: {
-    title: "Stock movements",
-    description: "A traceable history of every change to your stock.",
+    title: "Activity history",
+    description: "An automatic record of receipts, equipment issues and repairs.",
   },
   reports: {
     title: "Reports",
@@ -62,13 +52,8 @@ export const headings: Record<View, { title: string; description: string }> = {
 export const formTitles: Record<FormKind, string> = {
   receive: "Receive stock",
   issue: "Issue equipment",
-  return: "Record a return",
   fault: "Report a fault",
   equipment: "Add equipment",
   edit: "Edit equipment",
-  location: "Add location",
-  transfer: "Transfer equipment",
-  adjust: "Adjust stock",
-  stocktake: "Record stocktake",
 };
 

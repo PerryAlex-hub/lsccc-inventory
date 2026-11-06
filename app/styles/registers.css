@@ -393,3 +393,51 @@
   color:#8b9ca9;
   margin-top:6px
 }
+
+.maintenance-guide { display:flex; align-items:flex-start; gap:14px; padding:20px 0; margin-bottom:12px; border-top:1px solid var(--line); border-bottom:1px solid var(--line) }
+.maintenance-guide svg { flex-shrink:0; color:#506a78 }
+.maintenance-guide strong { font-size:14px }
+.maintenance-guide p { max-width:75ch; margin-top:6px; font-size:12px; line-height:1.7; color:#60717c }
+.maintenance-downloads { display:flex; flex-wrap:wrap; gap:10px; margin:20px 0 24px }
+.maintenance-filters { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:20px }
+.maintenance-filters button { display:flex; align-items:center; gap:9px; min-height:42px; padding:8px 14px; border:1px solid var(--line); border-radius:6px; background:#fff; color:#526573; font-size:12px; cursor:pointer }
+.maintenance-filters button[aria-pressed=true] { background:#2f4654; border-color:#2f4654; color:#fff }
+.maintenance-filters span { font-variant-numeric:tabular-nums; opacity:.8 }
+.maintenance-list { display:grid; gap:16px }
+.maintenance-case { border:1px solid var(--line); border-radius:10px; background:#fff; padding:24px; min-width:0 }
+.maintenance-case-heading { display:flex; justify-content:space-between; align-items:flex-start; gap:16px }
+.maintenance-case-heading h3 { font-size:17px; margin-top:6px; overflow-wrap:anywhere }
+.maintenance-case-heading p { font-size:12px; color:#60717c; margin-top:6px }
+.maintenance-case-heading .priority { white-space:nowrap }
+.repair-stages { display:flex; list-style:none; gap:8px; margin:24px 0; padding:0 }
+.repair-stages li { display:flex; flex:1; gap:8px; align-items:center; padding:10px 0; border-bottom:2px solid #e7edf1; font-size:12px; color:#687985 }
+.repair-stages li.stage-reached { border-bottom-color:#6a8c78; color:#315a43 }
+.repair-stages li[aria-current=step] { font-weight:750 }
+.repair-stages li>span { display:grid; place-items:center; width:23px; height:23px; border-radius:50%; background:#eff3f5; font-size:11px; flex-shrink:0 }
+.repair-stages .stage-reached>span { background:#e6f0e9 }
+.maintenance-meta { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:18px; margin:0 0 22px }
+.maintenance-meta dt { color:#687985; font-size:11px }
+.maintenance-meta dd { margin:6px 0 0; font-size:12px; line-height:1.6; overflow-wrap:anywhere }
+.maintenance-next { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:14px; border-top:1px solid var(--line); padding-top:18px }
+.maintenance-next p { font-size:12px; color:#60717c }
+.repair-completion { margin-top:20px; padding:20px; background:#f5f8fa; border-radius:8px }
+.repair-completion h4 { font-size:14px }
+.repair-completion>p { font-size:12px; line-height:1.6; color:#526573; margin:8px 0 18px }
+.repair-completion .field input { max-width:340px }
+.repair-completion .field input,.repair-completion .field textarea { font-size:13px }
+.repair-form-actions { display:flex; flex-wrap:wrap; justify-content:flex-end; gap:10px }
+.repair-history { font-size:11px; color:#526573; margin-top:20px }
+.repair-history summary { cursor:pointer; padding:8px 0; width:fit-content }
+.repair-history ol { list-style:none; padding:8px 0; display:grid; gap:10px }
+.repair-history li { display:flex; flex-wrap:wrap; gap:8px 18px }
+.repair-notes { border-top:1px solid var(--line); padding-top:16px; font-size:12px }
+.repair-notes p { white-space:pre-wrap; overflow-wrap:anywhere; margin-top:8px; line-height:1.7; color:#526573 }
+@media(max-width:680px) {
+  .maintenance-case { padding:18px }
+  .maintenance-case-heading { flex-wrap:wrap }
+  .maintenance-downloads .button { flex:1; min-height:44px }
+  .repair-stages { gap:6px }
+  .repair-stages li { font-size:11px; gap:5px }
+  .repair-completion { padding:16px }
+  .repair-completion .field input,.repair-completion .field textarea { font-size:16px }
+}

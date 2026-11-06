@@ -183,7 +183,7 @@
   font-weight:700;
   color:#475763
 }
-.field input,.field select {
+.field input,.field select,.field textarea {
   height:41px;
   width:100%;
   border:1px solid #dbe3e8;
@@ -194,7 +194,7 @@
   font-size:11.5px;
   outline:0
 }
-.field input:focus,.field select:focus {
+.field input:focus,.field select:focus,.field textarea:focus {
   border-color:#8698a4;
   box-shadow:0 0 0 3px #e4ebf1
 }
@@ -206,6 +206,22 @@
   color:#768590;
   font-size:10px
 }
+.field textarea { height:auto; min-height:90px; padding:11px; resize:vertical; line-height:1.6 }
+.field small { font-size:11px; color:#60717c }
+.form-guidance { padding:16px; margin:0 0 20px; background:#f0f5f8; border:1px solid #dbe4eb; border-radius:8px; font-size:12px; line-height:1.6 }
+.form-guidance p { color:#526573; margin-bottom:8px }
+.form-guidance .button { margin-top:6px }
+.inline-equipment { min-width:0; border:1px solid #dbe4eb; padding:18px 15px 0; border-radius:8px; margin:0 0 24px }
+.inline-equipment legend { padding:0 6px; font-size:12px; font-weight:700 }
+.inline-equipment>.field-hint:first-of-type { margin-top:0 }
+.stock-context { display:flex; flex-wrap:wrap; gap:8px 16px; padding:12px 0 20px; font-size:11px; color:#526573 }
+.stock-context strong { color:var(--ink); font-variant-numeric:tabular-nums }
+.action-drawer .field>span { font-size:12px }
+.action-drawer .field input,.action-drawer .field select { font-size:13px; min-height:44px }
+.action-drawer .field-hint { font-size:11px; line-height:1.6 }
+.form-intro p { color:#60717c; font-size:12px }
+.workspace-loading { min-height:100dvh; display:grid; place-items:center; color:#526573; font-size:14px }
+@media(max-width:680px) { .action-drawer .field input,.action-drawer .field select,.field textarea { font-size:16px } }
 .form-error {
   display:flex;
   align-items:flex-start;

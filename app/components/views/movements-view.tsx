@@ -8,11 +8,11 @@ export function MovementsView({ state }: Props) {
 <>
               <div className="surface movements-surface">
                 <div className="table-top">
-                  <h2>Movement history</h2>
+                  <h2>Activity history</h2>
                   <span>{state.movements.length} entries</span>
                 </div>
                 <div className="movement-timeline">
-                  {state.movements.map((m) => (
+                  {[...state.movements].sort((a, b) => b.date.localeCompare(a.date)).map((m) => (
                     <MovementRow
                       key={m.id}
                       movement={m}

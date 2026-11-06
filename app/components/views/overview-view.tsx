@@ -2,11 +2,12 @@ import { Icon } from "../ui/icons";
 import { EquipmentTable, Metric, MovementRow } from "../ui/inventory-widgets";
 import type { WorkspaceViewProps } from "./view-props";
 
-type Props = Pick<WorkspaceViewProps, "state" | "held" | "available" | "issued" | "faulty" | "navigate" | "setDetail">;
+type Props = Pick<WorkspaceViewProps, "state" | "held" | "available" | "issued" | "faulty" | "navigate" | "setDetail" | "setForm">;
 
-export function OverviewView({ state, held, available, issued, faulty, navigate, setDetail }: Props) {
+export function OverviewView({ state, held, available, issued, faulty, navigate, setDetail, setForm }: Props) {
   return (
 <>
+              {!state.equipment.length && <div className="form-guidance"><strong>Start with your first delivery</strong><p>Choose Receive stock to register equipment and record how many units arrived. You can then issue it to staff and track any repairs.</p><button className="button secondary" onClick={() => setForm("receive")}>Receive your first stock <Icon name="arrow" size={16} /></button></div>}
               <div className="overview-banner">
                 <div>
                   <span className="banner-kicker">
@@ -87,7 +88,7 @@ export function OverviewView({ state, held, available, issued, faulty, navigate,
                   <div className="panel-heading">
                     <div>
                       <span className="section-kicker">LATEST ACTIVITY</span>
-                      <h2>Recent movements</h2>
+                      <h2>Recent activity</h2>
                     </div>
                     <button
                       className="text-link"
@@ -97,7 +98,7 @@ export function OverviewView({ state, held, available, issued, faulty, navigate,
                     </button>
                   </div>
                   <div className="activity-list">
-                    {state.movements.slice(0, 4).map((m) => (
+                    {[...state.movements].sort((a, b) => b.date.localeCompare(a.date)).slice(0, 4).map((m) => (
                       <MovementRow
                         key={m.id}
                         movement={m}

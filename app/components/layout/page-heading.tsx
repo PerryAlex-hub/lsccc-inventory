@@ -68,12 +68,6 @@ export function PageHeading({ view, setForm, exportInventory, exportMovements }:
               {view === "issues" && (
                 <>
                   <button
-                    className="button secondary"
-                    onClick={() => setForm("return")}
-                  >
-                    Record return
-                  </button>
-                  <button
                     className="button primary"
                     onClick={() => setForm("issue")}
                   >
@@ -91,15 +85,6 @@ export function PageHeading({ view, setForm, exportInventory, exportMovements }:
                   Report a fault
                 </button>
               )}
-              {view === "locations" && (
-                <button
-                  className="button primary"
-                  onClick={() => setForm("location")}
-                >
-                  <Icon name="plus" size={17} />
-                  Add location
-                </button>
-              )}
               {view === "movements" && (
                 <>
                   <button
@@ -108,12 +93,6 @@ export function PageHeading({ view, setForm, exportInventory, exportMovements }:
                   >
                     <Icon name="download" size={17} />
                     Export history
-                  </button>
-                  <button
-                    className="button primary"
-                    onClick={() => setForm("transfer")}
-                  >
-                    Record transfer
                   </button>
                 </>
               )}
