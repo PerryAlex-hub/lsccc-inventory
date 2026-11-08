@@ -76,24 +76,26 @@ model Workspace {
 }
 
 model Equipment {
-  id        String     @id
-  name      String
-  category  String
-  location  String
-  available Int
-  issued    Int
-  faulty    Int
-  reorder   Int
-  receipts  Receipt[]
-  issues    Issue[]
-  faults    Fault[]
-  movements Movement[]
+  archivedAt DateTime?  @db.Timestamptz(6)
+  id         String     @id
+  name       String
+  category   String
+  location   String
+  available  Int
+  issued     Int
+  faulty     Int
+  reorder    Int
+  receipts   Receipt[]
+  issues     Issue[]
+  faults     Fault[]
+  movements  Movement[]
 
   // The migration preserves the case-insensitive unique name index and balance checks.
   @@map("equipment")
 }
 
 model Receipt {
+  archivedAt  DateTime? @db.Timestamptz(6)
   id          String    @id
   equipmentId String
   quantity    Int
@@ -105,6 +107,7 @@ model Receipt {
 }
 
 model Issue {
+  archivedAt  DateTime? @db.Timestamptz(6)
   id          String    @id
   equipmentId String
   quantity    Int
@@ -118,6 +121,7 @@ model Issue {
 }
 
 model Fault {
+  archivedAt  DateTime? @db.Timestamptz(6)
   id          String    @id
   equipmentId String
   quantity    Int
@@ -137,6 +141,7 @@ model Fault {
 }
 
 model Movement {
+  archivedAt  DateTime? @db.Timestamptz(6)
   id          String    @id
   type        String
   equipmentId String

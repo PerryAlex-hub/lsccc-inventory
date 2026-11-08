@@ -91,6 +91,16 @@ The workspace refreshes shared records every 30 seconds and on window focus. Suc
 
 Stock POST accepts `{ kind, fields }` for `equipment`, `edit`, `receive`, `issue`, or `fault`; maintenance accepts `{ action: "maintenance", id, status, details? }`. Server-side validation always applies. Team POST invites `{ email, role }`; PATCH accepts `{ target: "member" | "invitation", id, action, role? }`.
 
+## Archive and delete records
+
+Equipment, receipts, custody issues, maintenance and movements each have **Archive** and **Delete** actions on desktop and mobile. Both open a custom confirmation dialog; permanent deletion also requires typing the record reference. Use **Archived** above each register to find archived records, restore them or delete them. Archived equipment must be restored before editing or recording stock, and archived maintenance must be restored before changing its stage.
+
+Archiving hides a record from its active list without changing stock balances or linked history. Dashboard stock totals and reports include archived equipment; archived entries are excluded from low-stock and open-maintenance alerts. Inventory and movement CSVs include active and archived records with a Record status column. Maintenance downloads keep active and archived records separate.
+
+Deletion removes a record permanently. A receipt reverses its received quantity only when sufficient stock remains available. An issue returns its units to available stock only when it has no returns or equipment maintenance history. Deleting an open fault clears its faulty units without changing custody; deleting a completed fix preserves balances. Deleting a movement removes only that activity entry. Existing movements remain when their source receipt, issue or maintenance record is deleted. Equipment can be deleted only with zero stock and no linked records, including archived records; otherwise archive it. Every action is validated and audited in the same transaction as its stock changes. Deleted references remain reserved to prevent reuse.
+
+Record POST accepts `{ action: "archive" | "restore" | "delete", collection: "equipment" | "receipts" | "issues" | "faults" | "movements", id, confirmation: id }` with the usual UUID v4 idempotency key and active staff session. Apply the `20261108000000_record_archiving` migration with `npm run db:migrate`, regenerate Prisma Client and restart the development server before using these actions against an existing database.
+
 Invitations show whether Brevo accepted the message, failed, or is pending. Resend creates a fresh link; cancel revokes it. Brevo acceptance is not a guarantee of inbox delivery. Password-reset send failures are recorded as a generic server event while the recovery response remains identical for all addresses.
 
 ## Account emails and administrator controls

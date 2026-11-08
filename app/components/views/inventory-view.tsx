@@ -26,6 +26,7 @@ type Props = Pick<
   | "pageCount"
   | "setDetail"
   | "setForm"
+  | "onRecordAction"
 >;
 
 export function InventoryView({
@@ -46,6 +47,7 @@ export function InventoryView({
   pageCount,
   setDetail,
   setForm,
+  onRecordAction,
 }: Props) {
   return (
     <>
@@ -130,6 +132,7 @@ export function InventoryView({
             items={visibleEquipment}
             onSelect={setDetail}
             empty={filteredEquipment.length === 0}
+            onRecordAction={onRecordAction}
           />
           <div
             className={cn(

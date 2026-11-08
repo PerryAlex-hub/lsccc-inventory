@@ -4,11 +4,12 @@ import { equipmentName } from "../../lib/demo-data";
 import { formatDateTime, sum } from "../../lib/workspace-utils";
 import { EmptyState } from "../ui/inventory-widgets";
 import { MobileRecord } from "../ui/mobile-record";
+import { RecordActions } from "../ui/record-actions";
 import type { WorkspaceViewProps } from "./view-props";
 
-type Props = Pick<WorkspaceViewProps, "state">;
+type Props = Pick<WorkspaceViewProps, "state" | "onRecordAction">;
 
-export function ReceiptsView({ state }: Props) {
+export function ReceiptsView({ state, onRecordAction }: Props) {
   return (
     <>
       <div
@@ -54,6 +55,17 @@ export function ReceiptsView({ state }: Props) {
                   { label: "Supplier / source", value: receipt.supplier },
                   { label: "Quantity received", value: `${receipt.quantity} units` },
                 ]}
+                actions={
+                  <RecordActions
+                    target={{
+                      collection: "receipts",
+                      id: receipt.id,
+                      label: `${equipmentName(state.equipment, receipt.equipmentId)} · ${receipt.supplier}`,
+                    }}
+                    archived={Boolean(receipt.archivedAt)}
+                    onAction={onRecordAction}
+                  />
+                }
               />
             ))}
           {!state.receipts.length && (
@@ -72,6 +84,7 @@ export function ReceiptsView({ state }: Props) {
                 <th>Supplier</th>
                 <th>Quantity</th>
                 <th>Received (Lagos time)</th>
+                <th>Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -89,6 +102,17 @@ export function ReceiptsView({ state }: Props) {
                     </td>
                     <td>
                       <time dateTime={r.date}>{formatDateTime(r.date)}</time>
+                    </td>
+                    <td>
+                      <RecordActions
+                        target={{
+                          collection: "receipts",
+                          id: r.id,
+                          label: `${equipmentName(state.equipment, r.equipmentId)} · ${r.supplier}`,
+                        }}
+                        archived={Boolean(r.archivedAt)}
+                        onAction={onRecordAction}
+                      />
                     </td>
                   </tr>
                 ))}

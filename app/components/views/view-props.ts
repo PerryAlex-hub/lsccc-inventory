@@ -1,8 +1,10 @@
 import type { Equipment, Fault, InventoryState } from "../../lib/demo-data";
 import type { FormKind, View } from "../../lib/workspace-config";
 import type { RepairDetails } from "../../lib/inventory-actions";
+import type { RecordRequest } from "../../lib/record-actions";
 
 export type WorkspaceViewProps = {
+  onRecordAction: (request: RecordRequest) => void;
   state: InventoryState;
   held: number;
   available: number;

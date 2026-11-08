@@ -9,9 +9,13 @@ import { maintenanceCsvRows } from "../../lib/maintenance-export";
 import { downloadCsv, formatDateTime, localDateTime } from "../../lib/workspace-utils";
 import { Icon } from "../ui/icons";
 import { EmptyState } from "../ui/inventory-widgets";
+import { RecordActions } from "../ui/record-actions";
 import type { WorkspaceViewProps } from "./view-props";
 
-type Props = Pick<WorkspaceViewProps, "state" | "updateFault" | "setForm">;
+type Props = Pick<
+  WorkspaceViewProps,
+  "state" | "updateFault" | "setForm" | "onRecordAction"
+>;
 
 const stages = ["Reported", "In progress", "Resolved"] as const;
 
@@ -21,10 +25,12 @@ function MaintenanceCase({
   fault,
   state,
   updateFault,
+  onRecordAction,
 }: {
   fault: Fault;
   state: InventoryState;
   updateFault: Props["updateFault"];
+  onRecordAction: Props["onRecordAction"];
 }) {
   const [completing, setCompleting] = useState(false);
   const [fixedAt, setFixedAt] = useState(localDateTime());
@@ -157,7 +163,7 @@ function MaintenanceCase({
           <p>{fault.repairNotes}</p>
         </div>
       )}
-      {fault.status === "Reported" && (
+      {!fault.archivedAt && fault.status === "Reported" && (
         <div
           className={cn(
             "flex flex-wrap items-center justify-between gap-3.5 border-t border-t-line pt-4.5",
@@ -179,7 +185,7 @@ function MaintenanceCase({
           </Button>
         </div>
       )}
-      {fault.status === "In progress" && !completing && (
+      {!fault.archivedAt && fault.status === "In progress" && !completing && (
         <div
           className={cn(
             "flex flex-wrap items-center justify-between gap-3.5 border-t border-t-line pt-4.5",
@@ -198,7 +204,7 @@ function MaintenanceCase({
           </Button>
         </div>
       )}
-      {completing && (
+      {!fault.archivedAt && completing && (
         <form
           className={cn(
             "mt-5 rounded-[8px] bg-[#f5f8fa] px-5 py-5",
@@ -275,6 +281,14 @@ function MaintenanceCase({
           {error}
         </p>
       )}
+      <div className="mt-4 border-t border-line pt-2">
+        <RecordActions
+          target={{ collection: "faults", id: fault.id, label: fault.title }}
+          archived={Boolean(fault.archivedAt)}
+          onAction={onRecordAction}
+          disabled={pending}
+        />
+      </div>
       <details
         className={cn(
           "mt-5 text-[11px] text-[#526573]",
@@ -308,18 +322,21 @@ function MaintenanceCase({
   );
 }
 
-export function MaintenanceView({ state, updateFault, setForm }: Props) {
-  const [filter, setFilter] = useState("Pending");
+export function MaintenanceView({ state, updateFault, setForm, onRecordAction }: Props) {
+  const [filter, setFilter] = useState("All");
   const pending = state.faults.filter((fault) => fault.status !== "Resolved");
   const fixed = state.faults.filter((fault) => fault.status === "Resolved");
   const filtered = state.faults.filter((fault) =>
-    filter === "Pending"
-      ? fault.status !== "Resolved"
-      : filter === "Fixed"
-        ? fault.status === "Resolved"
-        : fault.status === filter,
+    filter === "All"
+      ? true
+      : filter === "Pending"
+        ? fault.status !== "Resolved"
+        : filter === "Fixed"
+          ? fault.status === "Resolved"
+          : fault.status === filter,
   );
   const counts: Record<string, number> = {
+    All: state.faults.length,
     Pending: pending.length,
     Reported: pending.filter((fault) => fault.status === "Reported").length,
     "In progress": pending.filter((fault) => fault.status === "In progress").length,
@@ -402,6 +419,7 @@ export function MaintenanceView({ state, updateFault, setForm }: Props) {
             fault={fault}
             state={state}
             updateFault={updateFault}
+            onRecordAction={onRecordAction}
           />
         ))}
         {!filtered.length && (

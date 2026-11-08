@@ -3,6 +3,8 @@ import { Button } from "@/app/components/ui/button";
 import type { Equipment, Movement } from "../../lib/demo-data";
 import { Icon, categoryIcon } from "../ui/icons";
 import { MovementRow } from "../ui/inventory-widgets";
+import { RecordActions } from "../ui/record-actions";
+import type { RecordRequest } from "../../lib/record-actions";
 
 export function DetailPanel({
   item,
@@ -11,6 +13,7 @@ export function DetailPanel({
   onEdit,
   onIssue,
   onReceive,
+  onRecordAction,
 }: {
   item: Equipment;
   movements: Movement[];
@@ -18,6 +21,7 @@ export function DetailPanel({
   onEdit: () => void;
   onIssue: () => void;
   onReceive: () => void;
+  onRecordAction: (request: RecordRequest) => void;
 }) {
   return (
     <div className="fixed [inset:0] z-50 flex justify-end">
@@ -75,9 +79,22 @@ export function DetailPanel({
                 "hover:text-[#37444d] hover:underline hover:underline-offset-4",
               )}
               onClick={onEdit}
+              disabled={Boolean(item.archivedAt)}
             >
               Edit equipment <Icon name="arrow" size={15} />
             </button>
+          </div>
+          <div className="border-b border-line py-3">
+            {item.archivedAt && (
+              <p className="mb-2 text-xs text-muted">
+                Archived equipment. Restore it before recording stock changes.
+              </p>
+            )}
+            <RecordActions
+              target={{ collection: "equipment", id: item.id, label: item.name }}
+              archived={Boolean(item.archivedAt)}
+              onAction={onRecordAction}
+            />
           </div>
           <div
             className={cn(
@@ -210,10 +227,14 @@ export function DetailPanel({
             "[&>button]:flex-1",
           )}
         >
-          <Button onClick={onReceive} variant="secondary">
+          <Button
+            onClick={onReceive}
+            variant="secondary"
+            disabled={Boolean(item.archivedAt)}
+          >
             Receive stock
           </Button>
-          <Button onClick={onIssue} variant="primary">
+          <Button onClick={onIssue} variant="primary" disabled={Boolean(item.archivedAt)}>
             Issue equipment
           </Button>
         </div>

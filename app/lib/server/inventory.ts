@@ -3,6 +3,11 @@ import type { Database } from "./db";
 import type { InventoryState, Fault } from "../demo-data";
 import type { Member } from "../access";
 import { applyInventoryForm, transitionFault } from "../inventory-actions";
+import {
+  applyRecordAction,
+  recordCollections,
+  type RecordCollection,
+} from "../record-actions";
 import type { FormKind } from "../workspace-config";
 import { ApiError, digest, text } from "./security";
 import { audit } from "./accounts";
@@ -18,11 +23,23 @@ export async function readInventory(db: Database): Promise<InventoryState> {
     db.movement.findMany({ orderBy: datedOrder }),
   ]);
   return {
-    equipment,
-    receipts: receipts.map((record) => ({ ...record, date: record.date.toISOString() })),
-    issues: issues.map((record) => ({ ...record, date: record.date.toISOString() })),
+    equipment: equipment.map((record) => ({
+      ...record,
+      archivedAt: record.archivedAt?.toISOString() ?? null,
+    })),
+    receipts: receipts.map((record) => ({
+      ...record,
+      archivedAt: record.archivedAt?.toISOString() ?? null,
+      date: record.date.toISOString(),
+    })),
+    issues: issues.map((record) => ({
+      ...record,
+      archivedAt: record.archivedAt?.toISOString() ?? null,
+      date: record.date.toISOString(),
+    })),
     faults: faults.map((record) => ({
       ...record,
+      archivedAt: record.archivedAt?.toISOString() ?? null,
       priority: record.priority as Fault["priority"],
       status: record.status as Fault["status"],
       date: record.date.toISOString(),
@@ -33,6 +50,7 @@ export async function readInventory(db: Database): Promise<InventoryState> {
     })),
     movements: movements.map((record) => ({
       ...record,
+      archivedAt: record.archivedAt?.toISOString() ?? null,
       type: record.type as InventoryState["movements"][number]["type"],
       date: record.date.toISOString(),
     })),
@@ -46,12 +64,29 @@ function changed<T extends { id: string }>(before: T[], after: T[]) {
 }
 
 async function saveChanges(db: Database, before: InventoryState, after: InventoryState) {
+  const removed = (collection: RecordCollection) =>
+    before[collection]
+      .filter((record) => !after[collection].some((entry) => entry.id === record.id))
+      .map((record) => record.id);
+  // Remove dependants first; all changes run inside the authenticated transaction.
+  const receipts = removed("receipts"),
+    issues = removed("issues"),
+    faults = removed("faults"),
+    movements = removed("movements"),
+    equipment = removed("equipment");
+  if (receipts.length) await db.receipt.deleteMany({ where: { id: { in: receipts } } });
+  if (issues.length) await db.issue.deleteMany({ where: { id: { in: issues } } });
+  if (faults.length) await db.fault.deleteMany({ where: { id: { in: faults } } });
+  if (movements.length)
+    await db.movement.deleteMany({ where: { id: { in: movements } } });
+  if (equipment.length)
+    await db.equipment.deleteMany({ where: { id: { in: equipment } } });
   for (const { id, ...data } of changed(before.equipment, after.equipment)) {
     await db.equipment.upsert({ where: { id }, create: { id, ...data }, update: data });
   }
   for (const record of changed(before.receipts, after.receipts)) {
-    const { id, equipmentId, quantity, supplier, date } = record;
-    const data = { equipmentId, quantity, supplier, date };
+    const { id, equipmentId, quantity, supplier, date, archivedAt } = record;
+    const data = { equipmentId, quantity, supplier, date, archivedAt };
     await db.receipt.upsert({ where: { id }, create: { id, ...data }, update: data });
   }
   for (const { id, ...data } of changed(before.issues, after.issues)) {
@@ -122,8 +157,44 @@ export async function mutateInventory(
     return readInventory(db);
   }
   const state = await readInventory(db);
-  let result;
-  if (body.action === "maintenance") {
+  // Deleted references stay reserved so a stale client cannot target a new record
+  // that happens to reuse the ID of a permanently removed record.
+  const retiredIds =
+    body.action === "archive" ||
+    body.action === "restore" ||
+    body.action === "delete" ||
+    body.kind === "edit"
+      ? []
+      : (
+          await db.auditEvent.findMany({
+            where: {
+              action: {
+                in: recordCollections.map(
+                  (collection) => `inventory.${collection}.delete`,
+                ),
+              },
+            },
+            select: { recordId: true },
+          })
+        ).flatMap((event) => (event.recordId ? [event.recordId] : []));
+  let result: ReturnType<typeof applyInventoryForm>;
+  if (
+    body.action === "archive" ||
+    body.action === "restore" ||
+    body.action === "delete"
+  ) {
+    if (!recordCollections.includes(body.collection as RecordCollection))
+      throw new ApiError(400, "Choose a valid record type.");
+    const id = text(body.id, "record");
+    if (body.confirmation !== id)
+      throw new ApiError(400, "Confirm the selected record before continuing.");
+    result = applyRecordAction(
+      state,
+      body.collection as RecordCollection,
+      id,
+      body.action,
+    );
+  } else if (body.action === "maintenance") {
     if (body.status !== "In progress" && body.status !== "Resolved")
       throw new ApiError(400, "Choose the next repair stage.");
     const details = body.status === "Resolved" ? formRepair(body.details) : undefined;
@@ -132,11 +203,19 @@ export async function mutateInventory(
       text(body.id, "maintenance record"),
       body.status as Fault["status"],
       details,
+      undefined,
+      retiredIds,
     );
   } else {
     if (!["equipment", "edit", "receive", "issue", "fault"].includes(String(body.kind)))
       throw new ApiError(400, "Choose a valid inventory action.");
-    result = applyInventoryForm(state, body.kind as FormKind, formFields(body.fields));
+    result = applyInventoryForm(
+      state,
+      body.kind as FormKind,
+      formFields(body.fields),
+      undefined,
+      retiredIds,
+    );
   }
   if (result.error) throw new ApiError(400, result.error);
   if (result.state.equipment.some((item) => item.available + item.issued > 2_000_000_000))
@@ -152,9 +231,11 @@ export async function mutateInventory(
   await audit(
     db,
     member.id,
-    body.action === "maintenance"
-      ? `maintenance.${body.status}`
-      : `inventory.${body.kind}`,
+    body.action === "archive" || body.action === "restore" || body.action === "delete"
+      ? `inventory.${body.collection}.${body.action}`
+      : body.action === "maintenance"
+        ? `maintenance.${body.status}`
+        : `inventory.${body.kind}`,
     result.equipmentId || String(body.id || ""),
   );
   return result.state;

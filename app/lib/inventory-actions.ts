@@ -15,6 +15,7 @@ export function applyInventoryForm(
   kind: FormKind,
   fields: Record<string, string>,
   now = new Date().toISOString(),
+  retiredIds: string[] = [],
 ): Result {
   const fail = (error: string): Result => ({ state, error });
   const creating =
@@ -24,6 +25,7 @@ export function applyInventoryForm(
   const text = (key: string) => fields[key]?.trim() || "";
   let equipment = state.equipment;
   let equipmentId = item?.id || "";
+  if (item?.archivedAt) return fail("Restore this equipment before recording changes.");
 
   if (creating || editing) {
     if (!text("name")) return fail("Enter the equipment name.");
@@ -47,7 +49,7 @@ export function applyInventoryForm(
     if (!Number.isSafeInteger(reorder) || reorder < 0)
       return fail("Low-stock alert level must be a non-negative whole number.");
     if (editing && !item) return fail("Choose the equipment to edit.");
-    equipmentId = editing ? item!.id : nextId("EQ", state.equipment);
+    equipmentId = editing ? item!.id : nextId("EQ", state.equipment, retiredIds);
     const details = { name: text("name"), category, location, reorder };
     equipment = editing
       ? state.equipment.map((entry) =>
@@ -94,7 +96,7 @@ export function applyInventoryForm(
   const update = (change: (entry: Equipment) => Equipment) =>
     equipment.map((entry) => (entry.id === equipmentId ? change(entry) : entry));
   const movement = (type: Movement["type"], description: string): Movement => ({
-    id: nextId("MOV", state.movements),
+    id: nextId("MOV", state.movements, retiredIds),
     type,
     equipmentId,
     quantity: qty,
@@ -111,7 +113,7 @@ export function applyInventoryForm(
         equipment: update((entry) => ({ ...entry, available: entry.available + qty })),
         receipts: [
           {
-            id: nextId("REC", state.receipts),
+            id: nextId("REC", state.receipts, retiredIds),
             equipmentId,
             quantity: qty,
             supplier: text("supplier"),
@@ -140,7 +142,7 @@ export function applyInventoryForm(
         })),
         issues: [
           {
-            id: nextId("ISS", state.issues),
+            id: nextId("ISS", state.issues, retiredIds),
             equipmentId,
             quantity: qty,
             returned: 0,
@@ -164,7 +166,7 @@ export function applyInventoryForm(
         equipment: update((entry) => ({ ...entry, faulty: entry.faulty + qty })),
         faults: [
           {
-            id: nextId("MNT", state.faults),
+            id: nextId("MNT", state.faults, retiredIds),
             equipmentId,
             quantity: qty,
             title: text("title"),
@@ -194,10 +196,13 @@ export function transitionFault(
   status: Fault["status"],
   details?: RepairDetails,
   now = new Date().toISOString(),
+  retiredIds: string[] = [],
 ): Result {
   const fail = (error: string): Result => ({ state, error });
   const fault = state.faults.find((entry) => entry.id === id);
   if (!fault) return fail("This maintenance record could not be found.");
+  if (fault.archivedAt)
+    return fail("Restore this maintenance record before updating it.");
   if (!(
     (fault.status === "Reported" && status === "In progress") ||
     (fault.status === "In progress" && status === "Resolved")
@@ -253,7 +258,7 @@ export function transitionFault(
         status === "Resolved"
           ? [
               {
-                id: nextId("MOV", state.movements),
+                id: nextId("MOV", state.movements, retiredIds),
                 type: "Repair",
                 equipmentId: fault.equipmentId,
                 quantity: fault.quantity,

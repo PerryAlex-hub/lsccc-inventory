@@ -6,12 +6,14 @@ export function MobileRecord({
   date,
   status,
   details,
+  actions,
 }: {
   reference: string;
   title: string;
   date: ReactNode;
   status?: ReactNode;
   details: { label: string; value: ReactNode }[];
+  actions?: ReactNode;
 }) {
   return (
     <article className="min-w-0 border-t border-line p-4">
@@ -29,6 +31,7 @@ export function MobileRecord({
           </div>
         ))}
       </dl>
+      {actions && <div className="mt-3 border-t border-line pt-2">{actions}</div>}
     </article>
   );
 }

@@ -159,7 +159,10 @@ export function OverviewView({
           View all inventory <Icon name="arrow" size={16} />
         </button>
       </div>
-      <EquipmentTable items={state.equipment.slice(0, 4)} onSelect={setDetail} />
+      <EquipmentTable
+        items={state.equipment.filter((item) => !item.archivedAt).slice(0, 4)}
+        onSelect={setDetail}
+      />
       <div
         className={cn(
           "mt-5.5 grid grid-cols-[minmax(0,1.45fr)_minmax(280px,1fr)] gap-4.25",

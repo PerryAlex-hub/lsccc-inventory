@@ -4,15 +4,22 @@ import { cn } from "@/app/lib/cn";
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { Fault, InventoryState } from "../lib/demo-data";
 import type { RepairDetails } from "../lib/inventory-actions";
+import {
+  recordCollections,
+  type RecordCollection,
+  type RecordRequest,
+} from "../lib/record-actions";
 import { formTitles, headings, type FormKind, type View } from "../lib/workspace-config";
 import { sum } from "../lib/workspace-utils";
 import { useInventoryData } from "../hooks/use-inventory-data";
 import { ActionPanel } from "./drawers/action-panel";
 import { DetailPanel } from "./drawers/detail-panel";
+import { RecordConfirmationDialog } from "./drawers/record-confirmation-dialog";
 import { PageHeading } from "./layout/page-heading";
 import { Sidebar } from "./layout/sidebar";
 import { Topbar } from "./layout/topbar";
 import { Icon } from "./ui/icons";
+import { EmptyState } from "./ui/inventory-widgets";
 import { InventoryView } from "./views/inventory-view";
 import { IssuesView } from "./views/issues-view";
 import { MaintenanceView } from "./views/maintenance-view";
@@ -34,6 +41,7 @@ export default function InventoryWorkspace({
     syncError,
     submitForm,
     updateFault,
+    updateRecord,
     exportInventory,
     exportMovements,
   } = useInventoryData(initialState);
@@ -41,6 +49,8 @@ export default function InventoryWorkspace({
   const [form, setForm] = useState<FormKind | null>(null);
   const [formEquipmentId, setFormEquipmentId] = useState<string | null>(null);
   const [detail, setDetail] = useState<string | null>(null);
+  const [recordRequest, setRecordRequest] = useState<RecordRequest | null>(null);
+  const [showArchived, setShowArchived] = useState(false);
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState("All categories");
   const [stockFilter, setStockFilter] = useState("All stock");
@@ -70,10 +80,12 @@ export default function InventoryWorkspace({
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
       if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "k") {
+        if (document.querySelector("dialog[open]")) return;
         event.preventDefault();
         searchRef.current?.focus();
       }
       if (event.key === "Escape") {
+        if (document.querySelector("dialog[open]")) return;
         setForm(null);
         setFormEquipmentId(null);
         setDetail(null);
@@ -89,6 +101,7 @@ export default function InventoryWorkspace({
     setMobileNav(false);
     setPage(1);
     setQuery("");
+    setShowArchived(false);
     window.history.pushState(null, "", `#${target}`);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
@@ -96,8 +109,43 @@ export default function InventoryWorkspace({
   const available = sum(state.equipment.map((item) => item.available));
   const issued = sum(state.equipment.map((item) => item.issued));
   const faulty = sum(state.equipment.map((item) => item.faulty));
-  const lowStock = state.equipment.filter((item) => item.available <= item.reorder);
-  const openFaults = state.faults.filter((fault) => fault.status !== "Resolved");
+  const lowStock = state.equipment.filter(
+    (item) => !item.archivedAt && item.available <= item.reorder,
+  );
+  const openFaults = state.faults.filter(
+    (fault) => !fault.archivedAt && fault.status !== "Resolved",
+  );
+  const collection: RecordCollection | null =
+    view === "inventory"
+      ? "equipment"
+      : view === "maintenance"
+        ? "faults"
+        : recordCollections.includes(view as RecordCollection)
+          ? (view as RecordCollection)
+          : null;
+  const archivedCount = collection
+    ? state[collection].filter((record) => record.archivedAt).length
+    : 0;
+  const activeState: InventoryState = {
+    ...state,
+    equipment: state.equipment.filter((record) => !record.archivedAt),
+    receipts: state.receipts.filter((record) => !record.archivedAt),
+    issues: state.issues.filter((record) => !record.archivedAt),
+    faults: state.faults.filter((record) => !record.archivedAt),
+    movements: state.movements.filter((record) => !record.archivedAt),
+  };
+  // Keep all equipment available for labels in historical/linked records.
+  const listState: InventoryState = {
+    ...activeState,
+    equipment: state.equipment,
+    ...(collection
+      ? {
+          [collection]: state[collection].filter(
+            (record) => Boolean(record.archivedAt) === showArchived,
+          ),
+        }
+      : {}),
+  };
   const categories = [
     "All categories",
     ...new Set(state.equipment.map((item) => item.category)),
@@ -105,6 +153,7 @@ export default function InventoryWorkspace({
   const filteredEquipment = useMemo(
     () =>
       state.equipment.filter((item) => {
+        if (Boolean(item.archivedAt) !== showArchived) return false;
         const matchesQuery = `${item.name} ${item.id} ${item.category} ${item.location}`
           .toLowerCase()
           .includes(query.toLowerCase());
@@ -117,10 +166,14 @@ export default function InventoryWorkspace({
             : item.faulty > 0);
         return matchesQuery && matchesCategory && matchesStock;
       }),
-    [state.equipment, query, category, stockFilter],
+    [state.equipment, query, category, stockFilter, showArchived],
   );
   const pageCount = Math.max(1, Math.ceil(filteredEquipment.length / 6));
-  const visibleEquipment = filteredEquipment.slice((page - 1) * 6, page * 6);
+  const currentPage = Math.min(page, pageCount);
+  const visibleEquipment = filteredEquipment.slice(
+    (currentPage - 1) * 6,
+    currentPage * 6,
+  );
   const selected = state.equipment.find((item) => item.id === detail);
   const handleSubmit = async (kind: FormKind, fields: Record<string, string>) => {
     const error = await submitForm(kind, fields);
@@ -157,8 +210,22 @@ export default function InventoryWorkspace({
     exportMovements();
     setToast("Movement CSV downloaded");
   };
+  const handleRecordAction = async (request: RecordRequest) => {
+    const error = await updateRecord(request);
+    if (error) return error;
+    setToast(
+      request.action === "delete"
+        ? "Record deleted"
+        : request.action === "archive"
+          ? "Record archived"
+          : "Record restored",
+    );
+    setDetail(null);
+    return null;
+  };
   const viewProps: WorkspaceViewProps = {
-    state,
+    state: listState,
+    onRecordAction: setRecordRequest,
     held,
     available,
     issued,
@@ -168,7 +235,7 @@ export default function InventoryWorkspace({
     categories,
     filteredEquipment,
     visibleEquipment,
-    page,
+    page: currentPage,
     pageCount,
     query,
     category,
@@ -243,13 +310,61 @@ export default function InventoryWorkspace({
               {syncError}
             </p>
           )}
-          {view === "overview" && <OverviewView {...viewProps} />}
-          {view === "inventory" && <InventoryView {...viewProps} />}
-          {view === "receipts" && <ReceiptsView {...viewProps} />}
-          {view === "issues" && <IssuesView {...viewProps} />}
-          {view === "maintenance" && <MaintenanceView {...viewProps} />}
-          {view === "movements" && <MovementsView {...viewProps} />}
-          {view === "reports" && <ReportsView {...viewProps} />}
+          {collection && (
+            <div className="mb-6 flex flex-wrap items-center justify-between gap-3 border-b border-line pb-4">
+              <div
+                role="group"
+                aria-label="Record visibility"
+                className="flex gap-1 rounded-lg border border-line bg-white p-1"
+              >
+                {[false, true].map((archived) => (
+                  <button
+                    key={String(archived)}
+                    type="button"
+                    aria-pressed={showArchived === archived}
+                    onClick={() => {
+                      setShowArchived(archived);
+                      setPage(1);
+                    }}
+                    className={cn(
+                      "min-h-11 rounded-md px-4 text-sm font-semibold",
+                      showArchived === archived
+                        ? "bg-primary text-white"
+                        : "text-muted hover:bg-canvas",
+                    )}
+                  >
+                    {archived ? `Archived (${archivedCount})` : "Active"}
+                  </button>
+                ))}
+              </div>
+              <p className="max-w-md text-xs leading-5 text-muted">
+                {showArchived
+                  ? "Restore a record to return it to the active list. Archived records still count toward stock balances."
+                  : "Archive records to keep them for later, or delete records entered in error."}
+              </p>
+            </div>
+          )}
+          {view === "overview" && (
+            <OverviewView
+              {...viewProps}
+              state={{ ...activeState, equipment: state.equipment }}
+            />
+          )}
+          {showArchived && collection && !archivedCount ? (
+            <EmptyState
+              title="No archived records"
+              message="Records you archive will appear here. You can restore them at any time."
+            />
+          ) : (
+            <>
+              {view === "inventory" && <InventoryView {...viewProps} />}
+              {view === "receipts" && <ReceiptsView {...viewProps} />}
+              {view === "issues" && <IssuesView {...viewProps} />}
+              {view === "maintenance" && <MaintenanceView {...viewProps} />}
+              {view === "movements" && <MovementsView {...viewProps} />}
+            </>
+          )}
+          {view === "reports" && <ReportsView {...viewProps} state={state} />}
           {view === "settings" && <TeamSettingsView />}
         </main>
       </div>
@@ -257,7 +372,7 @@ export default function InventoryWorkspace({
         <DetailPanel
           item={selected}
           movements={state.movements.filter(
-            (movement) => movement.equipmentId === selected.id,
+            (movement) => !movement.archivedAt && movement.equipmentId === selected.id,
           )}
           onClose={() => setDetail(null)}
           onEdit={() => {
@@ -275,13 +390,14 @@ export default function InventoryWorkspace({
             setFormEquipmentId(selected.id);
             setForm("receive");
           }}
+          onRecordAction={setRecordRequest}
         />
       )}
       {form && (
         <ActionPanel
           key={`${form}-${formEquipmentId || "new"}`}
           kind={form}
-          state={state}
+          state={activeState}
           initialEquipmentId={formEquipmentId}
           onClose={() => {
             setForm(null);
@@ -292,6 +408,14 @@ export default function InventoryWorkspace({
             setFormEquipmentId(equipmentId);
             setForm("receive");
           }}
+        />
+      )}
+      {recordRequest && (
+        <RecordConfirmationDialog
+          key={`${recordRequest.collection}-${recordRequest.id}-${recordRequest.action}`}
+          request={recordRequest}
+          onClose={() => setRecordRequest(null)}
+          onConfirm={handleRecordAction}
         />
       )}
       {toast && (

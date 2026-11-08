@@ -1,10 +1,12 @@
 import { cn } from "@/app/lib/cn";
 import { MovementRow } from "../ui/inventory-widgets";
+import { RecordActions } from "../ui/record-actions";
+import { equipmentName } from "../../lib/demo-data";
 import type { WorkspaceViewProps } from "./view-props";
 
-type Props = Pick<WorkspaceViewProps, "state">;
+type Props = Pick<WorkspaceViewProps, "state" | "onRecordAction">;
 
-export function MovementsView({ state }: Props) {
+export function MovementsView({ state, onRecordAction }: Props) {
   return (
     <>
       <div className="overflow-hidden rounded-[10px] border border-line bg-white">
@@ -22,7 +24,18 @@ export function MovementsView({ state }: Props) {
           {[...state.movements]
             .sort((a, b) => b.date.localeCompare(a.date))
             .map((m) => (
-              <MovementRow key={m.id} movement={m} equipment={state.equipment} expanded />
+              <div key={m.id} className="border-b border-line pb-2 last:border-0">
+                <MovementRow movement={m} equipment={state.equipment} expanded />
+                <RecordActions
+                  target={{
+                    collection: "movements",
+                    id: m.id,
+                    label: `${m.type} · ${equipmentName(state.equipment, m.equipmentId)}`,
+                  }}
+                  archived={Boolean(m.archivedAt)}
+                  onAction={onRecordAction}
+                />
+              </div>
             ))}
         </div>
       </div>

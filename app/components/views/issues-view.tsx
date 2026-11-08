@@ -4,11 +4,12 @@ import { equipmentName, formatDate } from "../../lib/demo-data";
 import { sum } from "../../lib/workspace-utils";
 import { EmptyState, Metric } from "../ui/inventory-widgets";
 import { MobileRecord } from "../ui/mobile-record";
+import { RecordActions } from "../ui/record-actions";
 import type { WorkspaceViewProps } from "./view-props";
 
-type Props = Pick<WorkspaceViewProps, "state" | "issued">;
+type Props = Pick<WorkspaceViewProps, "state" | "issued" | "onRecordAction">;
 
-export function IssuesView({ state, issued }: Props) {
+export function IssuesView({ state, issued, onRecordAction }: Props) {
   return (
     <>
       <div
@@ -69,6 +70,17 @@ export function IssuesView({ state, issued }: Props) {
                   value: `${issue.quantity - issue.returned} of ${issue.quantity}`,
                 },
               ]}
+              actions={
+                <RecordActions
+                  target={{
+                    collection: "issues",
+                    id: issue.id,
+                    label: `${equipmentName(state.equipment, issue.equipmentId)} · ${issue.assignee}`,
+                  }}
+                  archived={Boolean(issue.archivedAt)}
+                  onAction={onRecordAction}
+                />
+              }
             />
           ))}
           {!state.issues.length && (
@@ -88,6 +100,7 @@ export function IssuesView({ state, issued }: Props) {
                 <th>Department</th>
                 <th>Outstanding</th>
                 <th>Status</th>
+                <th>Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -114,6 +127,17 @@ export function IssuesView({ state, issued }: Props) {
                     >
                       {i.returned === i.quantity ? "Returned" : "Assigned"}
                     </span>
+                  </td>
+                  <td>
+                    <RecordActions
+                      target={{
+                        collection: "issues",
+                        id: i.id,
+                        label: `${equipmentName(state.equipment, i.equipmentId)} · ${i.assignee}`,
+                      }}
+                      archived={Boolean(i.archivedAt)}
+                      onAction={onRecordAction}
+                    />
                   </td>
                 </tr>
               ))}

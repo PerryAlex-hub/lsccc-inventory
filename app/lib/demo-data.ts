@@ -1,4 +1,5 @@
 export type Equipment = {
+  archivedAt?: string | null;
   id: string;
   name: string;
   category: string;
@@ -18,6 +19,7 @@ export type MovementType =
   | "Fault"
   | "Repair";
 export type Movement = {
+  archivedAt?: string | null;
   id: string;
   type: MovementType;
   equipmentId: string;
@@ -27,6 +29,7 @@ export type Movement = {
   actor: string;
 };
 export type Fault = {
+  archivedAt?: string | null;
   id: string;
   equipmentId: string;
   quantity: number;
@@ -42,6 +45,7 @@ export type Fault = {
   history?: { status: Fault["status"]; date: string; notes?: string }[];
 };
 export type Receipt = {
+  archivedAt?: string | null;
   id: string;
   equipmentId: string;
   quantity: number;
@@ -50,6 +54,7 @@ export type Receipt = {
   date: string;
 };
 export type Issue = {
+  archivedAt?: string | null;
   id: string;
   equipmentId: string;
   quantity: number;
@@ -336,10 +341,17 @@ export const initialState: InventoryState = {
   ],
 };
 
-export function nextId(prefix: string, current: { id: string }[]) {
+export function nextId(
+  prefix: string,
+  current: { id: string }[],
+  retiredIds: string[] = [],
+) {
   const largest = Math.max(
     0,
     ...current.map((item) => Number(item.id.split("-").at(-1)) || 0),
+    ...retiredIds
+      .filter((id) => id.startsWith(`${prefix}-`))
+      .map((id) => Number(id.split("-").at(-1)) || 0),
   );
   return `${prefix}-${String(largest + 1).padStart(4, "0")}`;
 }

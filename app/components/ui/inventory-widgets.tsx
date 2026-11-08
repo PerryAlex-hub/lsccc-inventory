@@ -7,6 +7,8 @@ import {
   type Movement,
 } from "../../lib/demo-data";
 import { Icon, categoryIcon, type IconName } from "./icons";
+import { RecordActions } from "./record-actions";
+import type { RecordRequest } from "../../lib/record-actions";
 
 export function Metric({
   icon,
@@ -87,10 +89,12 @@ export function EquipmentTable({
   items,
   onSelect,
   empty = false,
+  onRecordAction,
 }: {
   items: Equipment[];
   onSelect: (id: string) => void;
   empty?: boolean;
+  onRecordAction?: (request: RecordRequest) => void;
 }) {
   return (
     <>
@@ -136,6 +140,13 @@ export function EquipmentTable({
                 </div>
               ))}
             </dl>
+            {onRecordAction && (
+              <RecordActions
+                target={{ collection: "equipment", id: item.id, label: item.name }}
+                archived={Boolean(item.archivedAt)}
+                onAction={onRecordAction}
+              />
+            )}
           </article>
         ))}
         {empty && (
@@ -164,6 +175,7 @@ export function EquipmentTable({
                 <th>Issued</th>
                 <th>Faulty</th>
                 <th aria-label="Details" />
+                {onRecordAction && <th>Actions</th>}
               </tr>
             </thead>
             <tbody>
@@ -233,6 +245,15 @@ export function EquipmentTable({
                       <Icon name="chevron" size={17} />
                     </button>
                   </td>
+                  {onRecordAction && (
+                    <td>
+                      <RecordActions
+                        target={{ collection: "equipment", id: e.id, label: e.name }}
+                        archived={Boolean(e.archivedAt)}
+                        onAction={onRecordAction}
+                      />
+                    </td>
+                  )}
                 </tr>
               ))}
             </tbody>

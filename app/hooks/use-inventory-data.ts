@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { equipmentName, type Fault, type InventoryState } from "../lib/demo-data";
 import type { RepairDetails } from "../lib/inventory-actions";
+import type { RecordRequest } from "../lib/record-actions";
 import { apiRequest } from "../lib/api-client";
 import type { FormKind } from "../lib/workspace-config";
 import { downloadCsv, formatDateTime } from "../lib/workspace-utils";
@@ -79,6 +80,15 @@ export function useInventoryData(initialState: InventoryState) {
     return commit({ action: "maintenance", id: fault.id, status, details });
   }
 
+  function updateRecord(request: RecordRequest) {
+    return commit({
+      action: request.action,
+      collection: request.collection,
+      id: request.id,
+      confirmation: request.id,
+    });
+  }
+
   const exportInventory = () => {
     downloadCsv("lsccc-inventory.csv", [
       [
@@ -90,6 +100,7 @@ export function useInventoryData(initialState: InventoryState) {
         "Available",
         "Issued",
         "Faulty",
+        "Record status",
       ],
       ...state.equipment.map((e) => [
         e.id,
@@ -100,6 +111,7 @@ export function useInventoryData(initialState: InventoryState) {
         e.available,
         e.issued,
         e.faulty,
+        e.archivedAt ? "Archived" : "Active",
       ]),
     ]);
   };
@@ -113,6 +125,7 @@ export function useInventoryData(initialState: InventoryState) {
         "Quantity",
         "Description",
         "Recorded by",
+        "Record status",
       ],
       ...state.movements.map((m) => [
         m.id,
@@ -122,6 +135,7 @@ export function useInventoryData(initialState: InventoryState) {
         m.quantity,
         m.description,
         m.actor,
+        m.archivedAt ? "Archived" : "Active",
       ]),
     ]);
   };
@@ -132,6 +146,7 @@ export function useInventoryData(initialState: InventoryState) {
     syncError,
     submitForm,
     updateFault,
+    updateRecord,
     exportInventory,
     exportMovements,
   };
